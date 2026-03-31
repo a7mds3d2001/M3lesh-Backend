@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\User\User;
+namespace App\Http\Controllers\Api\User\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Device\StoreDeviceFromRequest;

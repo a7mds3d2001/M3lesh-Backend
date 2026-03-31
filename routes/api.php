@@ -1,17 +1,19 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\Auth\AuthController as AdminAuthController;
+use App\Http\Controllers\Api\Admin\Auth\DeviceController as AdminDeviceController;
+use App\Http\Controllers\Api\Admin\Auth\PermissionController as AdminPermissionController;
+use App\Http\Controllers\Api\Admin\Auth\RoleController as AdminRoleController;
 use App\Http\Controllers\Api\Admin\ContentPage\ContentPageController as AdminContentPageController;
 use App\Http\Controllers\Api\Admin\Notifications\NotificationBroadcastController as AdminNotificationBroadcastController;
 use App\Http\Controllers\Api\Admin\Notifications\NotificationController as AdminNotificationController;
 use App\Http\Controllers\Api\Admin\SupportTicket\SupportTicketController as AdminSupportTicketController;
-use App\Http\Controllers\Api\Admin\User\AuthController as AdminAuthController;
-use App\Http\Controllers\Api\Admin\User\PermissionController as AdminPermissionController;
-use App\Http\Controllers\Api\Admin\User\RoleController as AdminRoleController;
 use App\Http\Controllers\Api\Admin\User\UserController as AdminUserController;
+use App\Http\Controllers\Api\User\Auth\AuthController as UserAuthController;
+use App\Http\Controllers\Api\User\Auth\DeviceController as UserDeviceController;
 use App\Http\Controllers\Api\User\ContentPage\ContentPageController as UserContentPageController;
 use App\Http\Controllers\Api\User\Notifications\NotificationController as UserNotificationController;
 use App\Http\Controllers\Api\User\SupportTicket\SupportTicketController as UserSupportTicketController;
-use App\Http\Controllers\Api\User\User\AuthController as UserAuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(function (): void {
@@ -20,6 +22,7 @@ Route::prefix('admin')->group(function (): void {
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('me', [AdminAuthController::class, 'me']);
         Route::post('logout', [AdminAuthController::class, 'logout']);
+        Route::get('devices', [AdminDeviceController::class, 'index']);
 
         Route::get('roles', [AdminRoleController::class, 'index']);
         Route::post('roles', [AdminRoleController::class, 'store']);
@@ -76,6 +79,7 @@ Route::prefix('user')->group(function (): void {
         Route::delete('me', [UserAuthController::class, 'destroy']);
         Route::post('change-password', [UserAuthController::class, 'changePassword']);
         Route::post('logout', [UserAuthController::class, 'logout']);
+        Route::get('devices', [UserDeviceController::class, 'index']);
 
         Route::get('notifications', [UserNotificationController::class, 'index']);
         Route::get('notifications/unread-count', [UserNotificationController::class, 'unreadCount']);
