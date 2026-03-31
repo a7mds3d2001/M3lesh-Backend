@@ -50,7 +50,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandName(__('filament.navigation.brand'))
             ->brandLogoHeight('3rem')
             ->globalSearch(false)
-            ->favicon(asset('favicon.ico'))
+            ->favicon(asset('images/m3lesh-favicon.png'))
             ->colors([
                 'primary' => '#5F5173',
                 'secondary' => '#A38DBF',
