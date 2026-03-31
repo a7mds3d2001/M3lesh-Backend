@@ -1,0 +1,37 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    # Level 5 catches real bugs without being overly noisy on a mixed codebase.
+    # Raise incrementally: 0 → 3 → 5 → 8 → max.
+    level: 5
+
+    reportUnmatchedIgnoredErrors: false
+
+    paths:
+        - app
+
+    excludePaths: []
+
+    checkModelProperties: true
+
+    ignoreErrors:
+        # SoftDeletes adds withTrashed() to Builder/HasMany at runtime via macros.
+        - message: '~Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany::withTrashed~'
+
+        # Role::create() delegates to Spatie which returns the interface; runtime always returns App\Models\Role.
+        - message: '~Method App\\Models\\Role::create\(\) should return static~'
+
+        # LengthAwarePaginator::through() expects callable(Model, int) but PHP allows fewer parameters.
+        - message: '~AbstractPaginator.*::through\(\) expects callable~'
+          identifier: argument.type
+
+        # BelongsTo<T, TDeclaringModel> and Collection<TValue> covariance:
+        # PHPStan 2.0 treats TDeclaringModel / TValue as non-covariant. These
+        # are Larastan limitations; all returns are correct at runtime.
+        -
+            identifier: return.type
+            path: app/Models/News/NewsListing.php
+        -
+            identifier: return.type
+            path: app/Http/Resources/AdminResource.php

@@ -1,0 +1,69 @@
+name: Deploy Production
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          envs: GH_TOKEN
+          script: |
+            set -e
+            PHP="/opt/alt/php84/usr/bin/php"
+
+            cd "${{ secrets.APP_PATH }}"
+
+            echo "== Pull latest code =="
+            git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
+            git fetch --all
+            git reset --hard origin/main
+
+            echo "== Sync .env from .env.example (overwrite each deploy) =="
+            cp .env.example .env
+
+            echo "== Install dependencies =="
+            "$PHP" $(which composer) install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+
+            echo "== Laravel optimize =="
+            "$PHP" artisan config:clear
+            "$PHP" artisan route:clear
+            "$PHP" artisan view:clear
+            "$PHP" artisan cache:clear
+
+            "$PHP" artisan config:cache
+            "$PHP" artisan route:cache
+            "$PHP" artisan view:cache
+
+            echo "== Migrate =="
+            "$PHP" artisan migrate --force
+
+            echo "== Seed (roles & permissions only) =="
+            "$PHP" artisan db:seed --class=PermissionSeeder --force
+            "$PHP" artisan db:seed --class=RoleSeeder --force
+
+            echo "== Storage link =="
+            "$PHP" artisan storage:link || true
+
+            echo "== Queue restart (if workers run) =="
+            "$PHP" artisan queue:restart || true
+
+            echo "== Permissions =="
+            chown -R www-data:www-data storage bootstrap/cache || true
+            chmod -R 775 storage bootstrap/cache || true
+
+            echo "✅ Deploy done"
