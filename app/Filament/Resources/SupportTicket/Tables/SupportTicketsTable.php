@@ -4,6 +4,7 @@ namespace App\Filament\Resources\SupportTicket\Tables;
 
 use App\Models\SupportTicket\SupportTicket;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\ViewAction;
@@ -11,6 +12,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class SupportTicketsTable
 {
@@ -62,6 +64,16 @@ class SupportTicketsTable
             ])
             ->recordActions([
                 ViewAction::make()->iconButton()->color('gray'),
+                EditAction::make()
+                    ->iconButton()
+                    ->color('primary')
+                    ->slideOver()
+                    ->hidden(fn ($record) => $record->trashed())
+                    ->using(function (Model $record, array $data): Model {
+                        $record->update($data);
+
+                        return $record;
+                    }),
                 DeleteAction::make()
                     ->iconButton()->color('danger')
                     ->hidden(fn ($record) => $record->trashed()),

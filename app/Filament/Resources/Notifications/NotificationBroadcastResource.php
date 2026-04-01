@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\Notifications;
 
+use App\Filament\Resources\ContentPage\ContentPageResource;
 use App\Filament\Resources\Notifications\Pages\ListNotificationBroadcasts;
 use App\Filament\Resources\Notifications\Pages\ViewNotificationBroadcast;
 use App\Filament\Resources\Notifications\Schemas\NotificationBroadcastForm;
 use App\Filament\Resources\Notifications\Tables\NotificationBroadcastsTable;
-use App\Filament\Resources\ContentPage\ContentPageResource;
 use App\Filament\Resources\SupportTicket\SupportTicketResource;
 use App\Models\ContentPage\ContentPage;
 use App\Models\Notifications\NotificationBroadcast;

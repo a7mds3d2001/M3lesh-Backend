@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\SupportTicket;
 
+use App\Models\User\Admin;
+use App\Models\User\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,10 +20,10 @@ class SupportTicketLogResource extends JsonResource
         return [
             'id' => $this->id,
             'ticket_id' => $this->ticket_id,
-            'actor_type' => $this->actor_type === \App\Models\User\Admin::class ? 'admin' : 'user',
+            'actor_type' => $this->actor_type === Admin::class ? 'admin' : 'user',
             'actor_id' => $this->actor_id,
             'actor' => $this->whenLoaded('actor', function () {
-                /** @var \App\Models\User\Admin|\App\Models\User\User|null $actor */
+                /** @var Admin|User|null $actor */
                 $actor = $this->actor;
 
                 return $actor ? [

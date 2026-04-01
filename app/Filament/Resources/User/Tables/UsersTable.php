@@ -56,6 +56,7 @@ class UsersTable
                 ViewAction::make()->iconButton()->color('gray'),
                 EditAction::make()
                     ->iconButton()->color('primary')
+                    ->slideOver()
                     ->hidden(fn (User $record) => $record->trashed()),
                 DeleteAction::make()
                     ->iconButton()->color('danger')

@@ -13,12 +13,13 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class SupportTicketsRelationManager extends RelationManager
 {
     protected static string $relationship = 'supportTickets';
 
-    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return __('filament.support_ticket.nav.support_tickets');
     }

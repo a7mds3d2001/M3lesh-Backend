@@ -5,15 +5,15 @@ namespace App\Providers\Filament;
 use App\Filament\Livewire\AdminDatabaseNotifications;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Resources\Admin\AdminResource;
-use App\Filament\Resources\Admin\PermissionResource;
-use App\Filament\Resources\Admin\RoleResource;
 use App\Filament\Resources\ContentPage\ContentPageResource;
 use App\Filament\Resources\Notifications\NotificationBroadcastResource;
 use App\Filament\Resources\Notifications\NotificationResource;
+use App\Filament\Resources\Roles\RoleResource as ShieldRoleResource;
 use App\Filament\Resources\SupportTicket\SupportTicketResource;
 use App\Filament\Resources\User\UserResource;
 use App\Filament\Widgets\AccessControlStatsOverview;
 use App\Filament\Widgets\SupportTicketsStatsOverview;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Enums\DatabaseNotificationsPosition;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -88,8 +88,7 @@ class AdminPanelProvider extends PanelProvider
                             ->items([
                                 ...(UserResource::shouldRegisterNavigation() ? UserResource::getNavigationItems() : []),
                                 ...(AdminResource::shouldRegisterNavigation() ? AdminResource::getNavigationItems() : []),
-                                ...(RoleResource::shouldRegisterNavigation() ? RoleResource::getNavigationItems() : []),
-                                ...(PermissionResource::shouldRegisterNavigation() ? PermissionResource::getNavigationItems() : []),
+                                ...(ShieldRoleResource::shouldRegisterNavigation() ? ShieldRoleResource::getNavigationItems() : []),
                             ]),
                     ]);
             })
@@ -113,6 +112,9 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+            ])
+            ->plugins([
+                FilamentShieldPlugin::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,

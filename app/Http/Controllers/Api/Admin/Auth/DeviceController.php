@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Admin\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User\Admin;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -10,7 +11,7 @@ class DeviceController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        /** @var \App\Models\User\Admin|null $admin */
+        /** @var Admin|null $admin */
         $admin = $request->user('admin');
 
         if (! $admin) {
@@ -27,4 +28,3 @@ class DeviceController extends Controller
         return response()->json($devices);
     }
 }
-

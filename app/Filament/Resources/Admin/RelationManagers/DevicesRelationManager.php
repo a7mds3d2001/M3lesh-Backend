@@ -3,14 +3,15 @@
 namespace App\Filament\Resources\Admin\RelationManagers;
 
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class DevicesRelationManager extends RelationManager
 {
     protected static string $relationship = 'devices';
 
-    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return __('filament.resources.devices');
     }
@@ -21,29 +22,29 @@ class DevicesRelationManager extends RelationManager
             ->recordTitleAttribute('device_id')
             ->emptyStateHeading(__('filament.empty.no_devices'))
             ->columns([
-                Tables\Columns\TextColumn::make('device_id')
+                TextColumn::make('device_id')
                     ->label(__('filament.fields.device_id'))
                     ->wrap(),
-                Tables\Columns\TextColumn::make('platform')
+                TextColumn::make('platform')
                     ->label(__('filament.fields.platform'))
                     ->badge(),
-                Tables\Columns\TextColumn::make('manufacturer')
+                TextColumn::make('manufacturer')
                     ->label(__('filament.fields.manufacturer'))
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('model')
+                TextColumn::make('model')
                     ->label(__('filament.fields.model'))
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('os_version')
+                TextColumn::make('os_version')
                     ->label(__('filament.fields.os_version'))
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('app_version')
+                TextColumn::make('app_version')
                     ->label(__('filament.fields.app_version'))
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('last_used_at')
+                TextColumn::make('last_used_at')
                     ->label(__('filament.fields.last_used_at'))
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('filament.fields.created_at'))
                     ->dateTime()
                     ->since(),

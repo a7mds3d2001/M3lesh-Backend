@@ -9,7 +9,6 @@ use App\Filament\Resources\ContentPage\Tables\ContentPagesTable;
 use App\Filament\Support\AuditInfolistSection;
 use App\Models\ContentPage\ContentPage;
 use BackedEnum;
-use Filament\Actions\Action as InfolistAction;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
@@ -17,6 +16,8 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ContentPageResource extends Resource
 {
@@ -64,33 +65,6 @@ class ContentPageResource extends Resource
             ->components([
                 Section::make(__('filament.content_pages.nav.section_info'))
                     ->columnSpanFull()
-                    ->headerActions([
-                        InfolistAction::make('openEditModal')
-                            ->label(__('filament.actions.edit'))
-                            ->icon('heroicon-o-pencil')
-                            ->color('primary')
-                            ->iconButton()
-                            ->action(null)
-                            ->livewireClickHandlerEnabled(false)
-                            ->extraAttributes([
-                                'data-trigger-edit' => 'content-page',
-                                'type' => 'button',
-                            ])
-                            ->hidden(fn ($record) => ! static::canEdit($record)),
-
-                        InfolistAction::make('delete')
-                            ->label(__('filament.actions.delete'))
-                            ->icon('heroicon-o-trash')
-                            ->color('danger')
-                            ->iconButton()
-                            ->requiresConfirmation()
-                            ->action(function ($record) {
-                                $record->delete();
-
-                                return redirect(static::getUrl('index'));
-                            })
-                            ->hidden(fn ($record) => ! static::canDelete($record)),
-                    ])
                     ->schema([
                         IconEntry::make('is_active')
                             ->label(__('filament.fields.is_active'))
@@ -155,5 +129,23 @@ class ContentPageResource extends Resource
     public static function canDelete($record): bool
     {
         return auth()->guard('admin')->user()->can('delete_content_pages');
+    }
+
+    public static function canForceDelete($record): bool
+    {
+        return auth()->guard('admin')->user()->can('delete_content_pages');
+    }
+
+    public static function canRestore($record): bool
+    {
+        return auth()->guard('admin')->user()->can('delete_content_pages');
+    }
+
+    public static function getRecordRouteBindingEloquentQuery(): Builder
+    {
+        return parent::getRecordRouteBindingEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 }

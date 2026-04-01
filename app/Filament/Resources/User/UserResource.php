@@ -11,7 +11,6 @@ use App\Filament\Resources\User\Tables\UsersTable;
 use App\Filament\Support\AuditInfolistSection;
 use App\Models\User\User;
 use BackedEnum;
-use Filament\Actions\Action as InfolistAction;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
@@ -66,32 +65,6 @@ class UserResource extends Resource
         return $schema
             ->components([
                 Section::make(__('filament.user.user_information'))
-                    ->headerActions([
-                        InfolistAction::make('openEditModal')
-                            ->label(__('filament.actions.edit'))
-                            ->icon('heroicon-o-pencil')
-                            ->color('primary')
-                            ->iconButton()
-                            ->action(null)
-                            ->livewireClickHandlerEnabled(false)
-                            ->extraAttributes([
-                                'data-trigger-edit' => 'user',
-                                'type' => 'button',
-                            ])
-                            ->hidden(fn ($record) => $record->trashed() || ! static::canEdit($record)),
-                        InfolistAction::make('delete')
-                            ->label(__('filament.actions.delete'))
-                            ->icon('heroicon-o-trash')
-                            ->color('danger')
-                            ->iconButton()
-                            ->requiresConfirmation()
-                            ->action(function ($record) {
-                                $record->delete();
-
-                                return redirect(static::getUrl('index'));
-                            })
-                            ->hidden(fn ($record) => $record->trashed() || ! static::canDelete($record)),
-                    ])
                     ->schema([
                         ImageEntry::make('image')
                             ->label(__('filament.fields.image'))

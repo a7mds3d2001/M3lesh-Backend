@@ -3,11 +3,13 @@
 namespace App\Filament\Resources\Notifications\Pages;
 
 use App\Filament\Resources\Notifications\NotificationResource;
+use App\Models\Notifications\Notification;
 use App\Models\User\Admin;
 use App\Models\User\User;
 use App\Services\Notifications\NotificationService;
 use Filament\Notifications\Notification as FilamentNotification;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class CreateNotification extends CreateRecord
 {
@@ -19,7 +21,7 @@ class CreateNotification extends CreateRecord
         return $data;
     }
 
-    protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
+    protected function handleRecordCreation(array $data): Model
     {
         $service = app(NotificationService::class);
 
@@ -52,7 +54,7 @@ class CreateNotification extends CreateRecord
         /** @var int $lastId */
         $lastId = (int) (end($ids) ?: 0);
 
-        return \App\Models\Notifications\Notification::query()->findOrFail($lastId);
+        return Notification::query()->findOrFail($lastId);
     }
 
     protected function decodeJson(?string $json): ?array

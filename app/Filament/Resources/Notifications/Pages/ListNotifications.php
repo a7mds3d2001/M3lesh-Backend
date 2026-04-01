@@ -21,6 +21,7 @@ class ListNotifications extends ListRecords
         return [
             CreateAction::make()
                 ->label(__('filament.notifications.send_notification'))
+                ->slideOver()
                 ->visible(fn (): bool => auth()->guard('admin')->user()?->can('send_notifications') ?? false)
                 ->createAnother(false)
                 ->using(function (array $data): Model {

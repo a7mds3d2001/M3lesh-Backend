@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Filament\Resources\Admin\Pages;
+declare(strict_types=1);
 
-use App\Filament\Resources\Admin\AdminResource;
-use App\Models\User\Admin;
+namespace App\Filament\Resources\Roles\Pages;
+
+use App\Filament\Resources\Roles\RoleResource;
+use App\Models\User\Role;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
@@ -12,9 +14,9 @@ use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Tabs;
 
-class ViewAdmin extends ViewRecord
+class ViewRole extends ViewRecord
 {
-    protected static string $resource = AdminResource::class;
+    protected static string $resource = RoleResource::class;
 
     public function hasCombinedRelationManagerTabsWithContent(): bool
     {
@@ -39,22 +41,23 @@ class ViewAdmin extends ViewRecord
 
     protected function getHeaderActions(): array
     {
-        /** @var Admin $record */
+        /** @var Role $record */
         $record = $this->getRecord();
+        $resource = static::getResource();
 
         return [
             EditAction::make()
                 ->slideOver()
-                ->hidden(fn () => $record->isSuperAdmin() || $record->trashed()),
+                ->hidden(fn () => $record->trashed() || ! $resource::canEdit($record)),
             DeleteAction::make()
-                ->successRedirectUrl(static::getResource()::getUrl('index'))
-                ->hidden(fn () => $record->isSuperAdmin() || $record->trashed()),
+                ->successRedirectUrl($resource::getUrl('index'))
+                ->hidden(fn () => $record->trashed() || ! $resource::canDelete($record)),
             RestoreAction::make()
-                ->successRedirectUrl(static::getResource()::getUrl('index'))
-                ->hidden(fn () => $record->isSuperAdmin() || ! $record->trashed()),
+                ->successRedirectUrl($resource::getUrl('index'))
+                ->hidden(fn () => ! $record->trashed() || ! $resource::canRestore($record)),
             ForceDeleteAction::make()
-                ->successRedirectUrl(static::getResource()::getUrl('index'))
-                ->hidden(fn () => $record->isSuperAdmin() || ! $record->trashed()),
+                ->successRedirectUrl($resource::getUrl('index'))
+                ->hidden(fn () => ! $record->trashed() || ! $resource::canForceDelete($record)),
         ];
     }
 }

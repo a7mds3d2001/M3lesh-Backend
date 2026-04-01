@@ -10,6 +10,7 @@ use App\Http\Traits\ApiPaginationFilters;
 use App\Models\SupportTicket\SupportTicket;
 use App\Models\SupportTicket\SupportTicketLog;
 use App\Models\User\Admin;
+use App\Models\User\User;
 use App\Services\Notifications\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -160,14 +161,14 @@ class SupportTicketController extends Controller
         }
     }
 
-    private function createLog(SupportTicket $ticket, string $logType, ?string $message, ?array $attachments, bool $asAdmin, ?\App\Models\User\User $user = null): void
+    private function createLog(SupportTicket $ticket, string $logType, ?string $message, ?array $attachments, bool $asAdmin, ?User $user = null): void
     {
         if ($asAdmin) {
             $admin = auth('sanctum')->user();
             $actorType = $admin instanceof Admin ? Admin::class : '';
             $actorId = $actorType ? $admin->id : null;
         } else {
-            $actorType = $user ? \App\Models\User\User::class : '';
+            $actorType = $user ? User::class : '';
             $actorId = $user?->id;
         }
 

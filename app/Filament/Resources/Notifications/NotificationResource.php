@@ -3,11 +3,11 @@
 namespace App\Filament\Resources\Notifications;
 
 use App\Filament\Resources\Admin\AdminResource;
+use App\Filament\Resources\ContentPage\ContentPageResource;
 use App\Filament\Resources\Notifications\Pages\ListNotifications;
 use App\Filament\Resources\Notifications\Pages\ViewNotification;
 use App\Filament\Resources\Notifications\Schemas\NotificationForm;
 use App\Filament\Resources\Notifications\Tables\NotificationsTable;
-use App\Filament\Resources\ContentPage\ContentPageResource;
 use App\Filament\Resources\SupportTicket\SupportTicketResource;
 use App\Filament\Resources\User\UserResource;
 use App\Models\ContentPage\ContentPage;

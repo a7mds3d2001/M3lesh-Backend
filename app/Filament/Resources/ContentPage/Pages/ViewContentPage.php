@@ -4,7 +4,10 @@ namespace App\Filament\Resources\ContentPage\Pages;
 
 use App\Filament\Resources\ContentPage\ContentPageResource;
 use App\Models\ContentPage\ContentPage;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewContentPage extends ViewRecord
@@ -19,11 +22,17 @@ class ViewContentPage extends ViewRecord
 
         return [
             EditAction::make()
-                ->hidden(fn () => ! $resource::canEdit($record))
-                ->extraAttributes([
-                    'id' => 'content-page-page-edit-btn',
-                    'style' => 'position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;border:0!important',
-                ]),
+                ->slideOver()
+                ->hidden(fn () => $record->trashed() || ! $resource::canEdit($record)),
+            DeleteAction::make()
+                ->successRedirectUrl($resource::getUrl('index'))
+                ->hidden(fn () => $record->trashed() || ! $resource::canDelete($record)),
+            RestoreAction::make()
+                ->successRedirectUrl($resource::getUrl('index'))
+                ->hidden(fn () => ! $record->trashed() || ! $resource::canRestore($record)),
+            ForceDeleteAction::make()
+                ->successRedirectUrl($resource::getUrl('index'))
+                ->hidden(fn () => ! $record->trashed() || ! $resource::canForceDelete($record)),
         ];
     }
 }

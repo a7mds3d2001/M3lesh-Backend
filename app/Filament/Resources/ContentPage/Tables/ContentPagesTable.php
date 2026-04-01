@@ -4,10 +4,13 @@ namespace App\Filament\Resources\ContentPage\Tables;
 
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
 class ContentPagesTable
@@ -31,8 +34,10 @@ class ContentPagesTable
             ])
             ->recordActions([
                 ViewAction::make()->iconButton()->color('gray'),
-                EditAction::make()->iconButton()->color('primary'),
-                DeleteAction::make()->iconButton()->color('danger'),
+                EditAction::make()->iconButton()->color('primary')->slideOver()->hidden(fn ($record) => $record->trashed()),
+                DeleteAction::make()->iconButton()->color('danger')->hidden(fn ($record) => $record->trashed()),
+                RestoreAction::make()->iconButton()->color('success')->hidden(fn ($record) => ! $record->trashed()),
+                ForceDeleteAction::make()->iconButton()->color('danger')->hidden(fn ($record) => ! $record->trashed()),
             ])
             ->filters([
                 TernaryFilter::make('is_active')
@@ -40,6 +45,7 @@ class ContentPagesTable
                     ->placeholder(__('filament.filters.all'))
                     ->trueLabel(__('filament.filters.active'))
                     ->falseLabel(__('filament.filters.inactive')),
+                TrashedFilter::make(),
             ])
             ->toolbarActions([])
             ->deferFilters(false)

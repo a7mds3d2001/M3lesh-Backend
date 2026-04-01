@@ -160,6 +160,7 @@ return [
         'os_version' => 'إصدار النظام',
         'app_version' => 'إصدار التطبيق',
         'last_used_at' => 'آخر استخدام',
+        'global' => 'عام',
     ],
 
     'notifications' => [
@@ -220,6 +221,7 @@ return [
     'role' => [
         'role_information' => 'معلومات الدور',
         'no_admins' => 'لا يوجد مسؤولون لديهم هذا الدور',
+        'no_permissions' => 'لا توجد صلاحيات مخصصة',
         'name_en' => 'الاسم (إنجليزي)',
         'name_ar' => 'الاسم (عربي)',
     ],
