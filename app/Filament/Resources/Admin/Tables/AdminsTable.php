@@ -49,6 +49,7 @@ class AdminsTable
                     ->iconButton(),
                 EditAction::make()
                     ->iconButton()
+                    ->slideOver()
                     ->hidden(fn (Admin $record) => $record->isSuperAdmin() || $record->trashed()),
                 DeleteAction::make()
                     ->iconButton()

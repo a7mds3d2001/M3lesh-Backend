@@ -4,6 +4,7 @@ namespace App\Filament\Resources\SupportTicket\Pages;
 
 use App\Filament\Resources\SupportTicket\SupportTicketResource;
 use App\Models\SupportTicket\SupportTicket;
+use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
@@ -29,6 +30,9 @@ class ViewSupportTicket extends ViewRecord
         $resource = static::getResource();
 
         return [
+            EditAction::make()
+                ->slideOver()
+                ->hidden(fn () => $record->trashed() || ! $resource::canEdit($record)),
             RestoreAction::make()
                 ->hidden(fn () => ! $record->trashed() || ! $resource::canRestore($record)),
             ForceDeleteAction::make()

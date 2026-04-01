@@ -21,6 +21,7 @@ class ViewAdmin extends ViewRecord
 
         return [
             EditAction::make()
+                ->slideOver()
                 ->hidden(fn () => $record->isSuperAdmin() || $record->trashed()),
             DeleteAction::make()
                 ->successRedirectUrl(static::getResource()::getUrl('index'))

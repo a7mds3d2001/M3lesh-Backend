@@ -31,7 +31,7 @@ class ContentPagesTable
             ])
             ->recordActions([
                 ViewAction::make()->iconButton()->color('gray'),
-                EditAction::make()->iconButton()->color('primary'),
+                EditAction::make()->iconButton()->color('primary')->slideOver(),
                 DeleteAction::make()->iconButton()->color('danger'),
             ])
             ->filters([

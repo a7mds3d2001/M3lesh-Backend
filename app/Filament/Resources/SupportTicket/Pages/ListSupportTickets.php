@@ -17,6 +17,7 @@ class ListSupportTickets extends ListRecords
     {
         return [
             CreateAction::make()
+                ->slideOver()
                 ->createAnother(false)
                 ->using(function (array $data): SupportTicket {
                     $ownerType = $data['owner_type'] ?? 'visitor';
