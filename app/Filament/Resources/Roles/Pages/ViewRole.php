@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Roles\Pages;
 
 use App\Filament\Resources\Roles\RoleResource;
+use App\Models\User\Role;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
@@ -40,6 +41,7 @@ class ViewRole extends ViewRecord
 
     protected function getHeaderActions(): array
     {
+        /** @var Role $record */
         $record = $this->getRecord();
         $resource = static::getResource();
 

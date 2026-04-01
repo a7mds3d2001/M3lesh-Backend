@@ -37,8 +37,10 @@ class Permission extends SpatiePermission
     protected static function booted(): void
     {
         static::saving(function (self $permission): void {
-            if ($permission->key !== null) {
-                $permission->attributes['name'] = $permission->key;
+            $key = $permission->attributes['key'] ?? null;
+
+            if (is_string($key) && $key !== '') {
+                $permission->attributes['name'] = $key;
             }
         });
     }

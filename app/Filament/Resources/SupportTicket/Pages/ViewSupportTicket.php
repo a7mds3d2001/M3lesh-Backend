@@ -158,7 +158,7 @@ class ViewSupportTicket extends ViewRecord
                 ->slideOver()
                 ->authorize(fn (): bool => true)
                 ->hidden(fn () => $record->trashed()),
-                DeleteAction::make()
+            DeleteAction::make()
                 ->authorize(fn (): bool => true)
                 ->successRedirectUrl($resource::getUrl('index'))
                 ->hidden(fn (SupportTicket $record) => $record->trashed()),

@@ -28,4 +28,3 @@ class DeviceController extends Controller
         return response()->json($devices);
     }
 }
-

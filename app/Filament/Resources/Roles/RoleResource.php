@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Roles;
 
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use App\Filament\Resources\Roles\Pages\ListRoles;
 use App\Filament\Resources\Roles\Pages\ViewRole;
 use App\Filament\Resources\Roles\RelationManagers\AdminsRelationManager;
 use App\Filament\Resources\Roles\Schemas\RoleForm;
 use App\Filament\Resources\Roles\Tables\RolesTable;
 use App\Filament\Support\AuditInfolistSection;
+use App\Models\User\Role;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BezhanSalleh\FilamentShield\Support\Utils;
 use BezhanSalleh\PluginEssentials\Concerns\Resource as Essentials;
 use Filament\Infolists\Components\TextEntry;
@@ -143,7 +144,7 @@ class RoleResource extends Resource
         return $prepared;
     }
 
-    public static function syncRolePermissions(Model $record, array $data): void
+    public static function syncRolePermissions(Role $record, array $data): void
     {
         static::syncRolePermissionNames(
             $record,
@@ -170,7 +171,7 @@ class RoleResource extends Resource
             ->all();
     }
 
-    public static function syncRolePermissionNames(Model $record, array $permissionNames, string $guardName): void
+    public static function syncRolePermissionNames(Role $record, array $permissionNames, string $guardName): void
     {
         $permissionModels = collect($permissionNames)->map(function (string $permissionName) use ($guardName) {
             return Utils::getPermissionModel()::firstOrCreate([
@@ -182,7 +183,7 @@ class RoleResource extends Resource
         $record->syncPermissions($permissionModels);
     }
 
-    public static function touchRoleUpdatedBy(Model $record): void
+    public static function touchRoleUpdatedBy(Role $record): void
     {
         $adminId = current_audit_admin_id();
 

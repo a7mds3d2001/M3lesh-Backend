@@ -7,16 +7,16 @@ namespace App\Filament\Resources\Roles\Schemas;
 use App\Filament\Resources\Roles\RoleResource;
 use BezhanSalleh\FilamentShield\Support\Utils;
 use BezhanSalleh\FilamentShield\Traits\HasShieldFormComponents;
-use Filament\Forms\Components\CheckboxList;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Illuminate\Validation\Rules\Unique;
 use Livewire\Component as Livewire;
 
@@ -36,7 +36,7 @@ class RoleForm
                                     ->label(__('filament-shield::filament-shield.field.name'))
                                     ->unique(
                                         ignoreRecord: true,
-                                        modifyRuleUsing: fn (Unique $rule): Unique => Utils::isTenancyEnabled() ? $rule->where(Utils::getTenantModelForeignKey(), Filament::getTenant()?->id) : $rule
+                                        modifyRuleUsing: fn (Unique $rule): Unique => Utils::isTenancyEnabled() ? $rule->where(Utils::getTenantModelForeignKey(), Filament::getTenant()?->getKey()) : $rule,
                                     )
                                     ->required()
                                     ->maxLength(255)
@@ -56,7 +56,7 @@ class RoleForm
                                 Select::make(config('permission.column_names.team_foreign_key'))
                                     ->label(__('filament-shield::filament-shield.field.team'))
                                     ->placeholder(__('filament-shield::filament-shield.field.team.placeholder'))
-                                    ->default(Filament::getTenant()?->id)
+                                    ->default(Filament::getTenant()?->getKey())
                                     ->options(fn (): array => in_array(Utils::getTenantModel(), [null, '', '0'], true) ? [] : Utils::getTenantModel()::pluck('name', 'id')->toArray())
                                     ->visible(fn (): bool => RoleResource::shield()->isCentralApp() && Utils::isTenancyEnabled())
                                     ->dehydrated(fn (): bool => RoleResource::shield()->isCentralApp() && Utils::isTenancyEnabled()),
@@ -67,7 +67,11 @@ class RoleForm
                                     ->helperText(__('filament-shield::filament-shield.field.select_all.message'))
                                     ->live()
                                     ->afterStateUpdated(function (Livewire $livewire, Set $set, bool $state): void {
-                                        $checkboxLists = collect($livewire->form->getFlatComponents())
+                                        if (! method_exists($livewire, 'getForm')) {
+                                            return;
+                                        }
+
+                                        $checkboxLists = collect($livewire->getForm('form')->getFlatComponents())
                                             ->filter(fn ($component): bool => $component instanceof CheckboxList);
 
                                         $checkboxLists->each(function (CheckboxList $component) use ($set, $state): void {

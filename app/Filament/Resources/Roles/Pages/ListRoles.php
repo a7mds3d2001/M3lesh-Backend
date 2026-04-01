@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Roles\Pages;
 
 use App\Filament\Resources\Roles\RoleResource;
+use App\Models\User\Role;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
@@ -26,6 +27,10 @@ class ListRoles extends ListRecords
                     $record = new $model;
                     $record->fill($prepared);
                     $record->save();
+
+                    if (! $record instanceof Role) {
+                        throw new \RuntimeException('Unexpected role model instance.');
+                    }
 
                     RoleResource::syncRolePermissionNames(
                         $record,

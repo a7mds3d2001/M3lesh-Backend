@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Roles\Tables;
 
 use App\Filament\Resources\Roles\RoleResource;
+use App\Models\User\Role;
 use BezhanSalleh\FilamentShield\Support\Utils;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
@@ -15,7 +15,6 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class RolesTable
@@ -56,8 +55,8 @@ class RolesTable
                 EditAction::make()
                     ->iconButton()
                     ->slideOver()
-                    ->hidden(fn (Model $record): bool => $record->trashed())
-                    ->using(function (Model $record, array $data): Model {
+                    ->hidden(fn (Role $record): bool => $record->trashed())
+                    ->using(function (Role $record, array $data): Role {
                         $permissionNames = RoleResource::extractPermissionNames($data);
                         $prepared = RoleResource::prepareRoleDataForSave($data);
 
@@ -75,13 +74,13 @@ class RolesTable
                     }),
                 DeleteAction::make()
                     ->iconButton()
-                    ->hidden(fn (Model $record): bool => $record->trashed()),
+                    ->hidden(fn (Role $record): bool => $record->trashed()),
                 RestoreAction::make()
                     ->iconButton()
-                    ->hidden(fn (Model $record): bool => ! $record->trashed()),
+                    ->hidden(fn (Role $record): bool => ! $record->trashed()),
                 ForceDeleteAction::make()
                     ->iconButton()
-                    ->hidden(fn (Model $record): bool => ! $record->trashed()),
+                    ->hidden(fn (Role $record): bool => ! $record->trashed()),
             ])
             ->filters([
                 TrashedFilter::make(),

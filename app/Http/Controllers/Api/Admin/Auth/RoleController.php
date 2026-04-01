@@ -108,7 +108,7 @@ class RoleController extends Controller
             abort(404);
         }
 
-        $role->delete();
+        $role->forceDelete();
 
         return response()->json(null, 204);
     }
