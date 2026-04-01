@@ -9,10 +9,33 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Component;
+use Filament\Schemas\Components\Tabs;
 
 class ViewAdmin extends ViewRecord
 {
     protected static string $resource = AdminResource::class;
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
+
+    public function getContentTabLabel(): ?string
+    {
+        return __('filament.tabs.info');
+    }
+
+    public function getRelationManagersContentComponent(): Component
+    {
+        $component = parent::getRelationManagersContentComponent();
+
+        if ($component instanceof Tabs) {
+            $component->contained();
+        }
+
+        return $component;
+    }
 
     protected function getHeaderActions(): array
     {

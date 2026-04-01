@@ -5,6 +5,7 @@ namespace App\Models\User;
 use App\Models\Concerns\HasAuditFields;
 use App\Models\Concerns\HasLocalizedName;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Contracts\Role as RoleContract;
 use Spatie\Permission\Guard;
 use Spatie\Permission\Models\Role as SpatieRole;
@@ -19,6 +20,7 @@ class Role extends SpatieRole
 {
     use HasAuditFields;
     use HasLocalizedName;
+    use SoftDeletes;
 
     protected $fillable = ['name', 'name_en', 'name_ar', 'guard_name'];
 

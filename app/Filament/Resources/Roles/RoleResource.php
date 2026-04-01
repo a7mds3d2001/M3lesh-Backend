@@ -19,7 +19,9 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Override;
 
 class RoleResource extends Resource
@@ -189,5 +191,23 @@ class RoleResource extends Resource
         }
 
         $record->forceFill(['updated_by' => $adminId])->save();
+    }
+
+    public static function canRestore(Model $record): bool
+    {
+        return static::canDelete($record);
+    }
+
+    public static function canForceDelete(Model $record): bool
+    {
+        return static::canDelete($record);
+    }
+
+    public static function getRecordRouteBindingEloquentQuery(): Builder
+    {
+        return parent::getRecordRouteBindingEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 }

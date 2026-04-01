@@ -5,11 +5,13 @@ namespace App\Models\ContentPage;
 use App\Models\Concerns\HasAuditFields;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ContentPage extends Model
 {
     use HasAuditFields;
     use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'content_pages';
 

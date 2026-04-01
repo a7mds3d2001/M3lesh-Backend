@@ -9,8 +9,11 @@ use BezhanSalleh\FilamentShield\Support\Utils;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -53,6 +56,7 @@ class RolesTable
                 EditAction::make()
                     ->iconButton()
                     ->slideOver()
+                    ->hidden(fn (Model $record): bool => $record->trashed())
                     ->using(function (Model $record, array $data): Model {
                         $permissionNames = RoleResource::extractPermissionNames($data);
                         $prepared = RoleResource::prepareRoleDataForSave($data);
@@ -70,7 +74,18 @@ class RolesTable
                         return $record;
                     }),
                 DeleteAction::make()
-                    ->iconButton(),
-            ]);
+                    ->iconButton()
+                    ->hidden(fn (Model $record): bool => $record->trashed()),
+                RestoreAction::make()
+                    ->iconButton()
+                    ->hidden(fn (Model $record): bool => ! $record->trashed()),
+                ForceDeleteAction::make()
+                    ->iconButton()
+                    ->hidden(fn (Model $record): bool => ! $record->trashed()),
+            ])
+            ->filters([
+                TrashedFilter::make(),
+            ])
+            ->deferFilters(false);
     }
 }

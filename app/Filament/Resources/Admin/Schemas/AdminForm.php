@@ -20,15 +20,15 @@ class AdminForm
                     ->label(__('filament.fields.name'))
                     ->required()
                     ->maxLength(255),
+                PhoneInput::make('phone')
+                    ->label(__('filament.fields.phone'))
+                    ->defaultCountry('EG'),
                 TextInput::make('email')
                     ->label(__('filament.fields.email'))
                     ->email()
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
-                PhoneInput::make('phone')
-                    ->label(__('filament.fields.phone'))
-                    ->defaultCountry('EG'),
                 TextInput::make('password')
                     ->label(__('filament.user.password'))
                     ->password()

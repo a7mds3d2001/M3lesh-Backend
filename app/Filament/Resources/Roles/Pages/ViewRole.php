@@ -7,6 +7,8 @@ namespace App\Filament\Resources\Roles\Pages;
 use App\Filament\Resources\Roles\RoleResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Tabs;
@@ -44,10 +46,16 @@ class ViewRole extends ViewRecord
         return [
             EditAction::make()
                 ->slideOver()
-                ->hidden(fn () => ! $resource::canEdit($record)),
+                ->hidden(fn () => $record->trashed() || ! $resource::canEdit($record)),
             DeleteAction::make()
                 ->successRedirectUrl($resource::getUrl('index'))
-                ->hidden(fn () => ! $resource::canDelete($record)),
+                ->hidden(fn () => $record->trashed() || ! $resource::canDelete($record)),
+            RestoreAction::make()
+                ->successRedirectUrl($resource::getUrl('index'))
+                ->hidden(fn () => ! $record->trashed() || ! $resource::canRestore($record)),
+            ForceDeleteAction::make()
+                ->successRedirectUrl($resource::getUrl('index'))
+                ->hidden(fn () => ! $record->trashed() || ! $resource::canForceDelete($record)),
         ];
     }
 }
