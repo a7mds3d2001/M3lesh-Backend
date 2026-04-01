@@ -4,6 +4,10 @@ namespace App\Filament\Resources\Admin\Pages;
 
 use App\Filament\Resources\Admin\AdminResource;
 use App\Models\User\Admin;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewAdmin extends ViewRecord
@@ -16,15 +20,15 @@ class ViewAdmin extends ViewRecord
         $record = $this->getRecord();
 
         return [
-            \Filament\Actions\EditAction::make()
+            EditAction::make()
                 ->hidden(fn () => $record->isSuperAdmin() || $record->trashed()),
-            \Filament\Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->successRedirectUrl(static::getResource()::getUrl('index'))
                 ->hidden(fn () => $record->isSuperAdmin() || $record->trashed()),
-            \Filament\Actions\RestoreAction::make()
+            RestoreAction::make()
                 ->successRedirectUrl(static::getResource()::getUrl('index'))
                 ->hidden(fn () => $record->isSuperAdmin() || ! $record->trashed()),
-            \Filament\Actions\ForceDeleteAction::make()
+            ForceDeleteAction::make()
                 ->successRedirectUrl(static::getResource()::getUrl('index'))
                 ->hidden(fn () => $record->isSuperAdmin() || ! $record->trashed()),
         ];

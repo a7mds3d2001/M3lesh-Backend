@@ -5,6 +5,7 @@ namespace App\Filament\Resources\SupportTicket\Pages;
 use App\Filament\Resources\SupportTicket\SupportTicketResource;
 use App\Models\SupportTicket\SupportTicket;
 use App\Models\SupportTicket\SupportTicketLog;
+use App\Models\User\Admin;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
@@ -37,7 +38,7 @@ class ListSupportTickets extends ListRecords
 
                     SupportTicketLog::create([
                         'ticket_id' => $ticket->id,
-                        'actor_type' => \App\Models\User\Admin::class,
+                        'actor_type' => Admin::class,
                         'actor_id' => current_audit_admin_id(),
                         'message' => $ticket->message,
                         'log_type' => SupportTicketLog::LOG_TYPE_COMMENT,

@@ -20,7 +20,7 @@ class Role extends SpatieRole
     use HasAuditFields;
     use HasLocalizedName;
 
-    protected $fillable = ['name_en', 'name_ar', 'guard_name'];
+    protected $fillable = ['name', 'name_en', 'name_ar', 'guard_name'];
 
     /** Audit fields are set by the application only; not mass assignable from request. */
     protected $guarded = ['created_by', 'updated_by'];
@@ -31,6 +31,15 @@ class Role extends SpatieRole
     ];
 
     protected $appends = ['name'];
+
+    protected static function booted(): void
+    {
+        static::saving(function (self $role): void {
+            if (($role->attributes['name_en'] ?? null) !== null) {
+                $role->attributes['name'] = $role->attributes['name_en'];
+            }
+        });
+    }
 
     /** Filament/display: same as locale-based name. */
     public function getDisplayNameAttribute(): string
@@ -63,6 +72,7 @@ class Role extends SpatieRole
     public function setNameAttribute(string $value): void
     {
         $this->attributes['name_en'] = $value;
+        $this->attributes['name'] = $value;
     }
 
     /** Internal: English name (for Spatie and boot checks). */

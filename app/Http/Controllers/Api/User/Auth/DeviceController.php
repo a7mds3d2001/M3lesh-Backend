@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\User\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -10,7 +11,7 @@ class DeviceController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        /** @var \App\Models\User\User|null $user */
+        /** @var User|null $user */
         $user = $request->user();
 
         if (! $user) {

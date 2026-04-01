@@ -160,6 +160,7 @@ return [
         'os_version' => 'OS Version',
         'app_version' => 'App Version',
         'last_used_at' => 'Last Used',
+        'global' => 'Global',
     ],
 
     'notifications' => [
@@ -220,6 +221,7 @@ return [
     'role' => [
         'role_information' => 'Role Information',
         'no_admins' => 'No admins have this role',
+        'no_permissions' => 'No permissions assigned',
         'name_en' => 'Name (English)',
         'name_ar' => 'Name (Arabic)',
     ],

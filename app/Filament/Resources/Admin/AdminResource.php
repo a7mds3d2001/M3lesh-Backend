@@ -7,10 +7,15 @@ use App\Filament\Resources\Admin\Pages\ViewAdmin;
 use App\Filament\Resources\Admin\RelationManagers\DevicesRelationManager;
 use App\Filament\Resources\Admin\Schemas\AdminForm;
 use App\Filament\Resources\Admin\Tables\AdminsTable;
+use App\Filament\Resources\Roles\RoleResource;
 use App\Filament\Support\AuditInfolistSection;
 use App\Models\User\Admin;
 use BackedEnum;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
@@ -61,44 +66,44 @@ class AdminResource extends Resource
     {
         return $schema
             ->components([
-                \Filament\Schemas\Components\Section::make(__('filament.admin.admin_information'))
+                Section::make(__('filament.admin.admin_information'))
                     ->schema([
-                        \Filament\Infolists\Components\TextEntry::make('name')
+                        TextEntry::make('name')
                             ->label(__('filament.fields.name')),
-                        \Filament\Infolists\Components\TextEntry::make('email')
+                        TextEntry::make('email')
                             ->label(__('filament.fields.email'))
                             ->icon('heroicon-o-envelope')
                             ->copyable()
                             ->copyMessage(__('filament.activity.copied'))
                             ->copyMessageDuration(1500),
-                        \Filament\Infolists\Components\TextEntry::make('phone')
+                        TextEntry::make('phone')
                             ->label(__('filament.fields.phone'))
                             ->icon('heroicon-o-phone')
                             ->placeholder(__('filament.placeholder.empty')),
-                        \Filament\Infolists\Components\IconEntry::make('is_active')
+                        IconEntry::make('is_active')
                             ->label(__('filament.fields.is_active'))
                             ->boolean(),
                     ])
                     ->columnSpanFull()
                     ->columns(2),
 
-                \Filament\Schemas\Components\Section::make(__('filament.fields.roles'))
+                Section::make(__('filament.fields.roles'))
                     ->schema([
-                        \Filament\Infolists\Components\TextEntry::make('roles')
+                        TextEntry::make('roles')
                             ->hiddenLabel()
                             ->formatStateUsing(fn ($state, $record) => __('filament.placeholder.no_roles'))
                             ->placeholder(__('filament.placeholder.no_roles'))
                             ->visible(fn ($record) => $record->roles->isEmpty()),
-                        \Filament\Infolists\Components\RepeatableEntry::make('roles')
+                        RepeatableEntry::make('roles')
                             ->hiddenLabel()
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('display_name')
+                                TextEntry::make('display_name')
                                     ->hiddenLabel()
                                     ->badge()
                                     ->color('success')
                                     ->weight('bold')
                                     ->url(fn ($state, $record) => RoleResource::getUrl('view', ['record' => $record])),
-                                \Filament\Infolists\Components\TextEntry::make('permissions_list')
+                                TextEntry::make('permissions_list')
                                     ->label(__('filament.fields.permissions'))
                                     ->badge()
                                     ->color('info')

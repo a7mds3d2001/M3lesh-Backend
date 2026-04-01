@@ -1,10 +1,15 @@
 <?php
 
-namespace App\Filament\Resources\Admin\Pages;
+declare(strict_types=1);
 
-use App\Filament\Resources\Admin\RoleResource;
-use App\Models\User\Role;
+namespace App\Filament\Resources\Roles\Pages;
+
+use App\Filament\Resources\Roles\RoleResource;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Component;
+use Filament\Schemas\Components\Tabs;
 
 class ViewRole extends ViewRecord
 {
@@ -20,16 +25,27 @@ class ViewRole extends ViewRecord
         return __('filament.tabs.info');
     }
 
+    public function getRelationManagersContentComponent(): Component
+    {
+        $component = parent::getRelationManagersContentComponent();
+
+        if ($component instanceof Tabs) {
+            $component->contained();
+        }
+
+        return $component;
+    }
+
     protected function getHeaderActions(): array
     {
-        /** @var Role $record */
         $record = $this->getRecord();
         $resource = static::getResource();
 
         return [
-            \Filament\Actions\EditAction::make()
+            EditAction::make()
+                ->slideOver()
                 ->hidden(fn () => ! $resource::canEdit($record)),
-            \Filament\Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->successRedirectUrl($resource::getUrl('index'))
                 ->hidden(fn () => ! $resource::canDelete($record)),
         ];

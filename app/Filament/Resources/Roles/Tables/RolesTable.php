@@ -1,0 +1,76 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Filament\Resources\Roles\Tables;
+
+use App\Filament\Resources\Roles\RoleResource;
+use BezhanSalleh\FilamentShield\Support\Utils;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+
+class RolesTable
+{
+    public static function configure(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('name')
+                    ->weight('medium')
+                    ->label(__('filament.fields.name'))
+                    ->formatStateUsing(function ($state, $record): string {
+                        $localized = app()->getLocale() === 'ar'
+                            ? ($record->name_ar ?? null)
+                            : ($record->name_en ?? null);
+
+                        return filled($localized)
+                            ? (string) $localized
+                            : Str::headline((string) $state);
+                    })
+                    ->searchable(),
+                TextColumn::make('team.name')
+                    ->default(__('filament.fields.global'))
+                    ->badge()
+                    ->color(fn (mixed $state): string => filled($state) ? 'primary' : 'gray')
+                    ->label(__('filament-shield::filament-shield.column.team'))
+                    ->searchable()
+                    ->visible(fn (): bool => RoleResource::shield()->isCentralApp() && Utils::isTenancyEnabled()),
+                TextColumn::make('permissions_count')
+                    ->badge()
+                    ->label(__('filament-shield::filament-shield.column.permissions'))
+                    ->counts('permissions')
+                    ->color('primary'),
+            ])
+            ->recordActions([
+                ViewAction::make()
+                    ->iconButton(),
+                EditAction::make()
+                    ->iconButton()
+                    ->slideOver()
+                    ->using(function (Model $record, array $data): Model {
+                        $permissionNames = RoleResource::extractPermissionNames($data);
+                        $prepared = RoleResource::prepareRoleDataForSave($data);
+
+                        $record->update($prepared);
+
+                        RoleResource::syncRolePermissionNames(
+                            $record,
+                            $permissionNames,
+                            $prepared['guard_name'] ?? 'admin',
+                        );
+
+                        RoleResource::touchRoleUpdatedBy($record);
+
+                        return $record;
+                    }),
+                DeleteAction::make()
+                    ->iconButton(),
+            ]);
+    }
+}

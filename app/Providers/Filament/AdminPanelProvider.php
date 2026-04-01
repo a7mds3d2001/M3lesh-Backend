@@ -3,10 +3,10 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Livewire\AdminDatabaseNotifications;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use App\Filament\Resources\Roles\RoleResource as ShieldRoleResource;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Resources\Admin\AdminResource;
-use App\Filament\Resources\Admin\PermissionResource;
-use App\Filament\Resources\Admin\RoleResource;
 use App\Filament\Resources\ContentPage\ContentPageResource;
 use App\Filament\Resources\Notifications\NotificationBroadcastResource;
 use App\Filament\Resources\Notifications\NotificationResource;
@@ -88,8 +88,7 @@ class AdminPanelProvider extends PanelProvider
                             ->items([
                                 ...(UserResource::shouldRegisterNavigation() ? UserResource::getNavigationItems() : []),
                                 ...(AdminResource::shouldRegisterNavigation() ? AdminResource::getNavigationItems() : []),
-                                ...(RoleResource::shouldRegisterNavigation() ? RoleResource::getNavigationItems() : []),
-                                ...(PermissionResource::shouldRegisterNavigation() ? PermissionResource::getNavigationItems() : []),
+                                ...(ShieldRoleResource::shouldRegisterNavigation() ? ShieldRoleResource::getNavigationItems() : []),
                             ]),
                     ]);
             })
@@ -113,6 +112,9 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+            ])
+            ->plugins([
+                FilamentShieldPlugin::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,

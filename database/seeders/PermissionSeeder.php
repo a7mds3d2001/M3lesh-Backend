@@ -81,7 +81,7 @@ class PermissionSeeder extends Seeder
         foreach ($this->permissions as $item) {
             Permission::query()->updateOrCreate(
                 ['key' => $item['key'], 'guard_name' => 'admin'],
-                ['name_ar' => $item['name_ar'], 'name_en' => $item['name_en']],
+                ['name' => $item['key'], 'name_ar' => $item['name_ar'], 'name_en' => $item['name_en']],
             );
         }
     }

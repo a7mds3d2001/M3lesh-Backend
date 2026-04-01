@@ -29,8 +29,18 @@ class Permission extends SpatiePermission
     {
         return Attribute::make(
             get: fn (): ?string => $this->attributes['key'] ?? null,
-            set: fn (?string $value): array => ['key' => $value],
+            // Keep both columns synced for compatibility with packages that query `name`.
+            set: fn (?string $value): array => ['key' => $value, 'name' => $value],
         );
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (self $permission): void {
+            if ($permission->key !== null) {
+                $permission->attributes['name'] = $permission->key;
+            }
+        });
     }
 
     /**

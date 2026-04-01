@@ -7,6 +7,7 @@ use App\Models\Notifications\Notification;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -57,7 +58,7 @@ class Admin extends Authenticatable implements FilamentUser, HasMedia
         'updated_by' => 'integer',
     ];
 
-    public function devices(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function devices(): HasMany
     {
         return $this->hasMany(Device::class);
     }

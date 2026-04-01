@@ -10,9 +10,11 @@ use App\Filament\Resources\SupportTicket\Tables\SupportTicketsTable;
 use App\Filament\Support\AuditInfolistSection;
 use App\Models\SupportTicket\SupportTicket;
 use App\Models\SupportTicket\SupportTicketLog;
+use App\Models\User\Admin;
 use App\Services\Notifications\NotificationService;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Select;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
@@ -77,7 +79,7 @@ class SupportTicketResource extends Resource
                             ->color('primary')
                             ->tooltip(__('filament.support_ticket.change_status'))
                             ->form([
-                                \Filament\Forms\Components\Select::make('status')
+                                Select::make('status')
                                     ->label(__('filament.support_ticket.status'))
                                     ->options(SupportTicket::statuses())
                                     ->required(),
@@ -88,7 +90,7 @@ class SupportTicketResource extends Resource
                                 $record->update(['status' => $newStatus]);
                                 SupportTicketLog::create([
                                     'ticket_id' => $record->id,
-                                    'actor_type' => \App\Models\User\Admin::class,
+                                    'actor_type' => Admin::class,
                                     'actor_id' => current_audit_admin_id(),
                                     'message' => "Status changed from {$oldStatus} to {$newStatus}.",
                                     'log_type' => SupportTicketLog::LOG_TYPE_STATUS_CHANGE,
@@ -114,7 +116,7 @@ class SupportTicketResource extends Resource
                             ->color('primary')
                             ->tooltip(__('filament.support_ticket.change_priority'))
                             ->form([
-                                \Filament\Forms\Components\Select::make('priority')
+                                Select::make('priority')
                                     ->label(__('filament.support_ticket.priority'))
                                     ->options(SupportTicket::priorities())
                                     ->required(),
@@ -125,7 +127,7 @@ class SupportTicketResource extends Resource
                                 $record->update(['priority' => $newPriority]);
                                 SupportTicketLog::create([
                                     'ticket_id' => $record->id,
-                                    'actor_type' => \App\Models\User\Admin::class,
+                                    'actor_type' => Admin::class,
                                     'actor_id' => current_audit_admin_id(),
                                     'message' => "Priority changed from {$oldPriority} to {$newPriority}.",
                                     'log_type' => SupportTicketLog::LOG_TYPE_PRIORITY_CHANGE,
@@ -156,7 +158,7 @@ class SupportTicketResource extends Resource
                                 $record->update(['status' => SupportTicket::STATUS_CLOSED]);
                                 SupportTicketLog::create([
                                     'ticket_id' => $record->id,
-                                    'actor_type' => \App\Models\User\Admin::class,
+                                    'actor_type' => Admin::class,
                                     'actor_id' => current_audit_admin_id(),
                                     'message' => "Status changed from {$oldStatus} to closed.",
                                     'log_type' => SupportTicketLog::LOG_TYPE_STATUS_CHANGE,
