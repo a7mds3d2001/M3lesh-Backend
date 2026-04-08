@@ -32,19 +32,21 @@ class RoleForm
                     ->schema([
                         Section::make()
                             ->schema([
-                                TextInput::make('name')
-                                    ->label(__('filament-shield::filament-shield.field.name'))
-                                    ->unique(
-                                        ignoreRecord: true,
-                                        modifyRuleUsing: fn (Unique $rule): Unique => Utils::isTenancyEnabled() ? $rule->where(Utils::getTenantModelForeignKey(), Filament::getTenant()?->getKey()) : $rule,
-                                    )
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->dehydrated(false)
-                                    ->visible(false),
                                 TextInput::make('name_en')
                                     ->label(__('filament.role.name_en'))
                                     ->required()
+                                    ->unique(
+                                        ignoreRecord: true,
+                                        modifyRuleUsing: fn (Unique $rule): Unique => (function () use ($rule): Unique {
+                                            $rule = $rule->where('guard_name', Utils::getFilamentAuthGuard());
+
+                                            if (Utils::isTenancyEnabled()) {
+                                                $rule = $rule->where(Utils::getTenantModelForeignKey(), Filament::getTenant()?->getKey());
+                                            }
+
+                                            return $rule;
+                                        })(),
+                                    )
                                     ->maxLength(255),
                                 TextInput::make('name_ar')
                                     ->label(__('filament.role.name_ar'))
@@ -67,16 +69,7 @@ class RoleForm
                                     ->helperText(__('filament-shield::filament-shield.field.select_all.message'))
                                     ->live()
                                     ->afterStateUpdated(function (Livewire $livewire, Set $set, bool $state): void {
-                                        if (! method_exists($livewire, 'getForm')) {
-                                            return;
-                                        }
-
-                                        $checkboxLists = collect($livewire->getForm('form')->getFlatComponents())
-                                            ->filter(fn ($component): bool => $component instanceof CheckboxList);
-
-                                        $checkboxLists->each(function (CheckboxList $component) use ($set, $state): void {
-                                            $set($component->getName(), $state ? array_keys($component->getOptions()) : []);
-                                        });
+                                        static::syncShieldCheckboxListsFromSelectAll($livewire, $set, $state);
                                     })
                                     ->dehydrated(false),
                             ])
@@ -89,5 +82,17 @@ class RoleForm
                     ->columnSpanFull(),
                 static::getShieldFormComponents(),
             ]);
+    }
+
+    protected static function syncShieldCheckboxListsFromSelectAll(Livewire $livewire, Set $set, bool $state): void
+    {
+        collect($livewire->form->getFlatComponents())
+            ->filter(fn ($component): bool => $component instanceof CheckboxList)
+            ->each(function (CheckboxList $component) use ($set, $state): void {
+                $set(
+                    $component->getName(),
+                    $state ? array_keys($component->getOptions()) : [],
+                );
+            });
     }
 }

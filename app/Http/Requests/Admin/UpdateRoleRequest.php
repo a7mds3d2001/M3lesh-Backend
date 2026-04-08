@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateRoleRequest extends FormRequest
 {
@@ -18,7 +19,9 @@ class UpdateRoleRequest extends FormRequest
             'name_en' => 'sometimes|string|max:255',
             'name_ar' => 'sometimes|required|string|max:255',
             'permissions' => 'nullable|array',
-            'permissions.*' => 'exists:permissions,id',
+            'permissions.*' => [
+                Rule::exists('permissions', 'id')->where('guard_name', 'admin'),
+            ],
         ];
     }
 }

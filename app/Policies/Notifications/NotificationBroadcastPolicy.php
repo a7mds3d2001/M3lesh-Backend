@@ -10,7 +10,9 @@ class NotificationBroadcastPolicy
 {
     public function viewAny(Authenticatable $user): bool
     {
-        return $user instanceof Admin && $user->can('view_notification_broadcasts');
+        return $user instanceof Admin
+            && ($user->can('view_notification_broadcasts')
+                || $user->can('send_notification_broadcasts'));
     }
 
     public function view(Authenticatable $user, NotificationBroadcast $notificationBroadcast): bool
