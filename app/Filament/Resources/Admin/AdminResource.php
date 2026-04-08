@@ -89,44 +89,21 @@ class AdminResource extends Resource
 
                 Section::make(__('filament.fields.roles'))
                     ->schema([
-                        TextEntry::make('roles')
-                            ->hiddenLabel()
-                            ->formatStateUsing(fn ($state, $record) => __('filament.placeholder.no_roles'))
-                            ->placeholder(__('filament.placeholder.no_roles'))
-                            ->visible(fn ($record) => $record->roles->isEmpty()),
                         RepeatableEntry::make('roles')
                             ->hiddenLabel()
+                            ->placeholder(__('filament.placeholder.no_roles'))
                             ->schema([
                                 TextEntry::make('display_name')
                                     ->hiddenLabel()
                                     ->badge()
                                     ->color('success')
-                                    ->weight('bold')
-                                    ->url(fn ($state, $record) => RoleResource::getUrl('view', ['record' => $record])),
-                                TextEntry::make('permissions_list')
-                                    ->label(__('filament.fields.permissions'))
-                                    ->badge()
-                                    ->color('info')
-                                    ->getStateUsing(function ($record): array {
-                                        $isArabic = app()->getLocale() === 'ar';
-
-                                        return $record->permissions
-                                            ->map(function ($permission) use ($isArabic) {
-                                                $primary = $isArabic ? $permission->name_ar : $permission->name_en;
-                                                $secondary = $isArabic ? $permission->name_en : $permission->name_ar;
-
-                                                return $primary ?: ($secondary ?: $permission->key);
-                                            })
-                                            ->filter()
-                                            ->unique()
-                                            ->values()
-                                            ->all();
-                                    })
-                                    ->columnSpanFull(),
+                                    ->url(fn ($record) => RoleResource::getUrl('view', ['record' => $record])),
                             ])
-                            ->contained(true)
-                            ->columnSpanFull()
-                            ->visible(fn ($record) => $record->roles->isNotEmpty()),
+                            ->contained(false)
+                            ->extraAttributes([
+                                'style' => 'display: flex !important; flex-wrap: wrap; align-items: center; column-gap: 0.5rem; row-gap: 0.25rem;',
+                            ])
+                            ->columnSpanFull(),
                     ])
                     ->columnSpanFull(),
 

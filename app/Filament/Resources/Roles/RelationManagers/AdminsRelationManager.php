@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Roles\RelationManagers;
 
+use App\Filament\Resources\Admin\AdminResource;
+use Filament\Actions\ViewAction;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -42,14 +43,13 @@ class AdminsRelationManager extends RelationManager
                     ->label(__('filament.fields.email'))
                     ->icon('heroicon-o-envelope')
                     ->searchable(),
-                TextColumn::make('phone')
-                    ->label(__('filament.fields.phone'))
-                    ->placeholder(__('filament.placeholder.empty')),
-                IconColumn::make('is_active')
-                    ->label(__('filament.fields.is_active'))
-                    ->boolean(),
             ])
-            ->actions([])
+            ->recordActions([
+                ViewAction::make()
+                    ->iconButton()
+                    ->url(fn ($record) => AdminResource::getUrl('view', ['record' => $record]))
+                    ->hidden(fn ($record) => $record->trashed()),
+            ])
             ->headerActions([])
             ->bulkActions([]);
     }
