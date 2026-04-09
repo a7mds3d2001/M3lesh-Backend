@@ -24,6 +24,8 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'image' => storage_public_url($this->image),
+            'birth_date' => $this->birth_date?->format('Y-m-d'),
+            'gender' => $this->gender?->value,
             'phone' => $this->phone,
             'email' => $this->email,
             'created_by' => $this->auditAdminObject('creator'),

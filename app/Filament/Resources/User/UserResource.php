@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\User;
 
+use App\Enums\User\Gender;
 use App\Filament\Resources\User\Pages\ListUsers;
 use App\Filament\Resources\User\Pages\ViewUser;
 use App\Filament\Resources\User\RelationManagers\DevicesRelationManager;
@@ -91,6 +92,14 @@ class UserResource extends Resource
                             ->copyable()
                             ->copyMessage(__('filament.activity.copied'))
                             ->copyMessageDuration(1500)
+                            ->placeholder(__('filament.placeholder.empty')),
+                        TextEntry::make('birth_date')
+                            ->label(__('filament.fields.birth_date'))
+                            ->date()
+                            ->placeholder(__('filament.placeholder.empty')),
+                        TextEntry::make('gender')
+                            ->label(__('filament.fields.gender'))
+                            ->formatStateUsing(fn (?Gender $state): ?string => $state?->label())
                             ->placeholder(__('filament.placeholder.empty')),
                         IconEntry::make('is_active')
                             ->label(__('filament.fields.is_active'))

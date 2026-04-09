@@ -161,6 +161,10 @@ return [
         'app_version' => 'App Version',
         'last_used_at' => 'Last Used',
         'global' => 'Global',
+        'birth_date' => 'Birth date',
+        'gender' => 'Gender',
+        'gender_male' => 'Male',
+        'gender_female' => 'Female',
     ],
 
     'notifications' => [

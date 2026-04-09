@@ -2,6 +2,7 @@
 
 namespace App\Models\User;
 
+use App\Enums\User\Gender;
 use App\Models\Concerns\HasAuditFields;
 use App\Models\Notifications\Notification;
 use App\Models\SupportTicket\SupportTicket;
@@ -25,6 +26,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'image',
+        'birth_date',
+        'gender',
         'phone',
         'email',
         'password',
@@ -49,6 +52,8 @@ class User extends Authenticatable
     }
 
     protected $casts = [
+        'birth_date' => 'date',
+        'gender' => Gender::class,
         'is_active' => 'boolean',
         'created_by' => 'integer',
         'updated_by' => 'integer',

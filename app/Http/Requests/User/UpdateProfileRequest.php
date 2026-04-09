@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\User;
 
+use App\Enums\User\Gender;
 use App\Models\User\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -38,6 +39,8 @@ class UpdateProfileRequest extends FormRequest
                 Rule::unique('users', 'email')->ignore($user->id),
             ],
             'image' => ['sometimes', 'nullable', 'file', 'max:5120', 'mimes:jpeg,jpg,png,gif,webp'],
+            'birth_date' => ['sometimes', 'nullable', 'date', 'before_or_equal:today'],
+            'gender' => ['sometimes', 'nullable', Rule::enum(Gender::class)],
         ];
     }
 }

@@ -161,6 +161,10 @@ return [
         'app_version' => 'إصدار التطبيق',
         'last_used_at' => 'آخر استخدام',
         'global' => 'عام',
+        'birth_date' => 'تاريخ الميلاد',
+        'gender' => 'النوع',
+        'gender_male' => 'ذكر',
+        'gender_female' => 'أنثى',
     ],
 
     'notifications' => [

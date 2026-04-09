@@ -1391,6 +1391,18 @@
                                             "type": "text"
                                         },
                                         {
+                                            "key": "birth_date",
+                                            "value": "1990-05-15",
+                                            "type": "text",
+                                            "description": "Optional. ISO date Y-m-d, not in the future."
+                                        },
+                                        {
+                                            "key": "gender",
+                                            "value": "male",
+                                            "type": "text",
+                                            "description": "Optional. male or female."
+                                        },
+                                        {
                                             "key": "image",
                                             "type": "file",
                                             "src": [],
@@ -1399,7 +1411,7 @@
                                     ]
                                 },
                                 "url": "{{base_url}}/api/user/me",
-                                "description": "Multipart **form-data**. All text fields optional per request rules; **image** is optional file."
+                                "description": "Multipart **form-data**. All text fields optional per request rules; **birth_date** (Y-m-d), **gender** (`male`|`female`), **image** optional file."
                             }
                         },
                         {

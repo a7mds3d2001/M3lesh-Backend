@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\User;
 
+use App\Enums\User\Gender;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class UpdateUserRequest extends FormRequest
@@ -21,6 +23,8 @@ class UpdateUserRequest extends FormRequest
             'phone' => 'required|string|max:255|unique:users,phone,'.$userId,
             'email' => 'required|email|max:255|unique:users,email,'.$userId,
             'image' => 'nullable|string|max:500',
+            'birth_date' => ['nullable', 'date', 'before_or_equal:today'],
+            'gender' => ['nullable', Rule::enum(Gender::class)],
             'password' => ['nullable', 'string', Password::min(8)],
         ];
     }
