@@ -6,6 +6,7 @@ use App\Enums\User\Gender;
 use App\Filament\Resources\User\Pages\ListUsers;
 use App\Filament\Resources\User\Pages\ViewUser;
 use App\Filament\Resources\User\RelationManagers\DevicesRelationManager;
+use App\Filament\Resources\User\RelationManagers\PostsRelationManager;
 use App\Filament\Resources\User\RelationManagers\SupportTicketsRelationManager;
 use App\Filament\Resources\User\Schemas\UserForm;
 use App\Filament\Resources\User\Tables\UsersTable;
@@ -115,6 +116,7 @@ class UserResource extends Resource
     {
         return [
             DevicesRelationManager::class,
+            PostsRelationManager::class,
             SupportTicketsRelationManager::class,
         ];
     }

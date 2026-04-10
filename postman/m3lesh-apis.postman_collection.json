@@ -1,7 +1,7 @@
 {
     "info": {
         "name": "M3lesh APIs",
-        "description": "Admin: endpoints under /api/admin require Bearer token.\\nUser: endpoints under /api/user include auth and protected user APIs.\\n\\nThis collection contains only the active M3lesh modules: admins, roles, permissions, users, notifications, support tickets, and content pages.\\nLocale: Accept-Language header (en or ar). Variables: base_url, admin_token, user_token, lang.",
+        "description": "Admin: `/api/admin` with Bearer token — includes **posts** and **post-comment-presets** APIs plus Filament (`/admin`).\\nUser: `/api/user` — auth, **posts** (Browse / My posts / Actions), **comment-presets** (read-only list).\\nVariables: base_url, admin_token, user_token, lang, post_id, comment_preset_id, comment_id, like_id.",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "variable": [
@@ -20,6 +20,22 @@
         {
             "key": "lang",
             "value": "en"
+        },
+        {
+            "key": "post_id",
+            "value": "1"
+        },
+        {
+            "key": "comment_preset_id",
+            "value": "1"
+        },
+        {
+            "key": "comment_id",
+            "value": "1"
+        },
+        {
+            "key": "like_id",
+            "value": "1"
         }
     ],
     "event": [
@@ -1097,10 +1113,10 @@
                                 ],
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"message\": \"Help needed\",\n  \"priority\": \"normal\",\n  \"user_id\": null,\n  \"visitor_name\": \"Guest User\",\n  \"visitor_phone\": \"+201234567890\",\n  \"visitor_email\": \"guest@example.com\"\n}"
+                                    "raw": "{\n  \"message\": \"Help needed\",\n  \"priority\": \"normal\",\n  \"post_id\": null,\n  \"user_id\": null,\n  \"visitor_name\": \"Guest User\",\n  \"visitor_phone\": \"+201234567890\",\n  \"visitor_email\": \"guest@example.com\"\n}"
                                 },
                                 "url": "{{base_url}}/api/admin/support-tickets",
-                                "description": "With **user_id**: ticket linked to user (visitor fields ignored). Without **user_id**: require **visitor_name** and **visitor_phone** or **visitor_email**.\n\n**priority:** `low` | `normal` | `high` (optional). **attachments:** array of path strings in JSON if needed. Status is set by server (`open`). See `postman/API_FIELD_VALUES.md`."
+                                "description": "With **user_id**: ticket linked to user (visitor fields ignored). Without **user_id**: require **visitor_name** and **visitor_phone** or **visitor_email**.\n\n**post_id:** optional — link ticket to a **post**. Must exist in `posts`.\n\n**priority:** `low` | `normal` | `high` (optional). **attachments:** array of path strings in JSON if needed. Status is set by server (`open`). See `postman/API_FIELD_VALUES.md`."
                             }
                         },
                         {
@@ -1123,10 +1139,10 @@
                                 ],
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"message\": \"Updated message\",\n  \"priority\": \"high\",\n  \"visitor_name\": \"Guest\",\n  \"visitor_phone\": \"+201234567890\",\n  \"visitor_email\": \"guest@example.com\"\n}"
+                                    "raw": "{\n  \"message\": \"Updated message\",\n  \"priority\": \"high\",\n  \"post_id\": null,\n  \"visitor_name\": \"Guest\",\n  \"visitor_phone\": \"+201234567890\",\n  \"visitor_email\": \"guest@example.com\"\n}"
                                 },
                                 "url": "{{base_url}}/api/admin/support-tickets/1",
-                                "description": "**priority:** `low` | `normal` | `high`. **status:** `open` | `in_progress` | `closed` (optional on full update). **attachments:** string paths array if used."
+                                "description": "**post_id:** optional — set or clear link to a post (`null` to unlink).\n\n**priority:** `low` | `normal` | `high`. **status:** `open` | `in_progress` | `closed` (optional on full update). **attachments:** string paths array if used."
                             }
                         },
                         {
@@ -1240,12 +1256,528 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Posts",
+                    "description": "Moderation API. Path param **`admin_post`** = post id. Permissions: `view_posts`, `create_posts`, `edit_posts`, `delete_posts`, `restore_posts`, `force_delete_posts`. Delete comment/like requires `edit_posts`. Query: `per_page`, `page`, `user_id`, `is_active`, `with_trashed`, `only_trashed`, `search`/`q`, `sort_by`, `sort_order`.",
+                    "item": [
+                        {
+                            "name": "List",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/admin/posts?per_page=15&page=1&user_id=&is_active=&with_trashed=&only_trashed=&search=",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "admin",
+                                        "posts"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "per_page",
+                                            "value": "15"
+                                        },
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        },
+                                        {
+                                            "key": "user_id",
+                                            "value": "",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "is_active",
+                                            "value": "",
+                                            "description": "true | false",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "with_trashed",
+                                            "value": "",
+                                            "description": "true = include soft-deleted",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "only_trashed",
+                                            "value": "",
+                                            "description": "true = only soft-deleted",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "search",
+                                            "value": "",
+                                            "disabled": true
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "Create",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "if (pm.response.code === 201) {",
+                                            "    const j = pm.response.json();",
+                                            "    if (j.data && j.data.id) {",
+                                            "        pm.collectionVariables.set('post_id', String(j.data.id));",
+                                            "    }",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"user_id\": 1,\n  \"body\": \"Post body from admin API\",\n  \"is_active\": true\n}"
+                                },
+                                "url": "{{base_url}}/api/admin/posts",
+                                "description": "**user_id** required (existing user). **body** required. **is_active** optional (default true)."
+                            }
+                        },
+                        {
+                            "name": "Get by ID",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": "{{base_url}}/api/admin/posts/{{post_id}}"
+                            }
+                        },
+                        {
+                            "name": "Update",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"body\": \"Updated by admin\",\n  \"is_active\": true,\n  \"user_id\": 1\n}"
+                                },
+                                "url": "{{base_url}}/api/admin/posts/{{post_id}}"
+                            }
+                        },
+                        {
+                            "name": "Delete (soft)",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": "{{base_url}}/api/admin/posts/{{post_id}}"
+                            }
+                        },
+                        {
+                            "name": "Restore",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": "{{base_url}}/api/admin/posts/{{post_id}}/restore"
+                            }
+                        },
+                        {
+                            "name": "Force delete",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": "{{base_url}}/api/admin/posts/{{post_id}}/force",
+                                "description": "Permanent delete. Requires `force_delete_posts`."
+                            }
+                        },
+                        {
+                            "name": "List comments",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/admin/posts/{{post_id}}/comments?per_page=15&page=1",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "admin",
+                                        "posts",
+                                        "{{post_id}}",
+                                        "comments"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "per_page",
+                                            "value": "15"
+                                        },
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "Delete comment",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": "{{base_url}}/api/admin/posts/{{post_id}}/comments/{{comment_id}}"
+                            }
+                        },
+                        {
+                            "name": "List likes",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/admin/posts/{{post_id}}/likes?per_page=15&page=1",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "admin",
+                                        "posts",
+                                        "{{post_id}}",
+                                        "likes"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "per_page",
+                                            "value": "15"
+                                        },
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "Delete like",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": "{{base_url}}/api/admin/posts/{{post_id}}/likes/{{like_id}}"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Post comment presets",
+                    "description": "CRUD + restore + force delete. Path **`comment_preset`** = preset id. Permissions: `view_*`, `create_*`, `edit_*`, `delete_*`, `restore_*`, `force_delete_*` on post comment presets.",
+                    "item": [
+                        {
+                            "name": "List",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/admin/post-comment-presets?per_page=15&page=1&is_active=&with_trashed=&only_trashed=&search=",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "admin",
+                                        "post-comment-presets"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "per_page",
+                                            "value": "15"
+                                        },
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        },
+                                        {
+                                            "key": "is_active",
+                                            "value": "",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "with_trashed",
+                                            "value": "",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "only_trashed",
+                                            "value": "",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "search",
+                                            "value": "",
+                                            "disabled": true
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "Create",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "if (pm.response.code === 201) {",
+                                            "    const j = pm.response.json();",
+                                            "    if (j.data && j.data.id) {",
+                                            "        pm.collectionVariables.set('comment_preset_id', String(j.data.id));",
+                                            "    }",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"text\": \"Thanks for sharing!\",\n  \"is_active\": true\n}"
+                                },
+                                "url": "{{base_url}}/api/admin/post-comment-presets"
+                            }
+                        },
+                        {
+                            "name": "Get by ID",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": "{{base_url}}/api/admin/post-comment-presets/{{comment_preset_id}}"
+                            }
+                        },
+                        {
+                            "name": "Update",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"text\": \"Updated preset text\",\n  \"is_active\": true\n}"
+                                },
+                                "url": "{{base_url}}/api/admin/post-comment-presets/{{comment_preset_id}}"
+                            }
+                        },
+                        {
+                            "name": "Delete (soft)",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": "{{base_url}}/api/admin/post-comment-presets/{{comment_preset_id}}"
+                            }
+                        },
+                        {
+                            "name": "Restore",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": "{{base_url}}/api/admin/post-comment-presets/{{comment_preset_id}}/restore"
+                            }
+                        },
+                        {
+                            "name": "Force delete",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": "{{base_url}}/api/admin/post-comment-presets/{{comment_preset_id}}/force"
+                            }
+                        }
+                    ]
                 }
             ]
         },
         {
             "name": "User",
-            "description": "User APIs under /api/user: public read-only endpoints plus authenticated user account endpoints (register, login, me, update, delete, change password, logout).",
+            "description": "User APIs under /api/user: auth, profile, devices, notifications, **posts** (**Browse** / **My posts** / **Actions**), **comment presets**, content pages, support tickets.",
             "item": [
                 {
                     "name": "Auth",
@@ -1616,6 +2148,404 @@
                                 ],
                                 "url": "{{base_url}}/api/user/notifications/read-all"
                             }
+                        }
+                    ]
+                },
+                {
+                    "name": "Comment presets",
+                    "description": "Active presets for comments (`comment_preset_id`). Managed in Filament.",
+                    "item": [
+                        {
+                            "name": "List",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{user_token}}"
+                                    }
+                                ],
+                                "url": "{{base_url}}/api/user/comment-presets"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Posts",
+                    "description": "**Browse** — feed: list, details, comments list. **My posts** — list, details, create, update, delete. **Actions** — like, comment (add), report. **Create** saves `post_id` on 201.",
+                    "item": [
+                        {
+                            "name": "Browse",
+                            "description": "Active posts feed, single post, and comments list. Query: `per_page`, `page`, `sort_by`, `sort_order`.",
+                            "item": [
+                                {
+                                    "name": "List",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [
+                                            {
+                                                "key": "Accept-Language",
+                                                "value": "{{lang}}"
+                                            },
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{user_token}}"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{base_url}}/api/user/posts?per_page=15&page=1&sort_by=&sort_order=desc",
+                                            "host": [
+                                                "{{base_url}}"
+                                            ],
+                                            "path": [
+                                                "api",
+                                                "user",
+                                                "posts"
+                                            ],
+                                            "query": [
+                                                {
+                                                    "key": "per_page",
+                                                    "value": "15"
+                                                },
+                                                {
+                                                    "key": "page",
+                                                    "value": "1"
+                                                },
+                                                {
+                                                    "key": "sort_by",
+                                                    "value": "",
+                                                    "description": "id | created_at | updated_at",
+                                                    "disabled": true
+                                                },
+                                                {
+                                                    "key": "sort_order",
+                                                    "value": "desc",
+                                                    "description": "asc | desc"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "Details",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [
+                                            {
+                                                "key": "Accept-Language",
+                                                "value": "{{lang}}"
+                                            },
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{user_token}}"
+                                            }
+                                        ],
+                                        "url": "{{base_url}}/api/user/posts/{{post_id}}"
+                                    }
+                                },
+                                {
+                                    "name": "List comments",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [
+                                            {
+                                                "key": "Accept-Language",
+                                                "value": "{{lang}}"
+                                            },
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{user_token}}"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{base_url}}/api/user/posts/{{post_id}}/comments?per_page=15&page=1",
+                                            "host": [
+                                                "{{base_url}}"
+                                            ],
+                                            "path": [
+                                                "api",
+                                                "user",
+                                                "posts",
+                                                "{{post_id}}",
+                                                "comments"
+                                            ],
+                                            "query": [
+                                                {
+                                                    "key": "per_page",
+                                                    "value": "15"
+                                                },
+                                                {
+                                                    "key": "page",
+                                                    "value": "1"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "my posts",
+                            "description": "Current user’s posts: list, view, create, update, delete.",
+                            "item": [
+                                {
+                                    "name": "List",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [
+                                            {
+                                                "key": "Accept-Language",
+                                                "value": "{{lang}}"
+                                            },
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{user_token}}"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{base_url}}/api/user/posts/mine?per_page=15&page=1&sort_by=&sort_order=desc",
+                                            "host": [
+                                                "{{base_url}}"
+                                            ],
+                                            "path": [
+                                                "api",
+                                                "user",
+                                                "posts",
+                                                "mine"
+                                            ],
+                                            "query": [
+                                                {
+                                                    "key": "per_page",
+                                                    "value": "15"
+                                                },
+                                                {
+                                                    "key": "page",
+                                                    "value": "1"
+                                                },
+                                                {
+                                                    "key": "sort_by",
+                                                    "value": "",
+                                                    "description": "id | created_at | updated_at",
+                                                    "disabled": true
+                                                },
+                                                {
+                                                    "key": "sort_order",
+                                                    "value": "desc",
+                                                    "description": "asc | desc"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "Details",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [
+                                            {
+                                                "key": "Accept-Language",
+                                                "value": "{{lang}}"
+                                            },
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{user_token}}"
+                                            }
+                                        ],
+                                        "url": "{{base_url}}/api/user/posts/{{post_id}}"
+                                    }
+                                },
+                                {
+                                    "name": "Create",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "exec": [
+                                                    "if (pm.response.code === 201) {",
+                                                    "    const j = pm.response.json();",
+                                                    "    if (j.data && j.data.id) {",
+                                                    "        pm.collectionVariables.set('post_id', String(j.data.id));",
+                                                    "    }",
+                                                    "}"
+                                                ],
+                                                "type": "text/javascript"
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Accept-Language",
+                                                "value": "{{lang}}"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            },
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{user_token}}"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"body\": \"Hello from Postman — this is my post text.\"\n}"
+                                        },
+                                        "url": "{{base_url}}/api/user/posts",
+                                        "description": "**body** required, max 20000 chars."
+                                    }
+                                },
+                                {
+                                    "name": "Update",
+                                    "request": {
+                                        "method": "PUT",
+                                        "header": [
+                                            {
+                                                "key": "Accept-Language",
+                                                "value": "{{lang}}"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            },
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{user_token}}"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"body\": \"Updated post body text.\"\n}"
+                                        },
+                                        "url": "{{base_url}}/api/user/posts/{{post_id}}",
+                                        "description": "Owner only. **body** required when present, max 20000 chars."
+                                    }
+                                },
+                                {
+                                    "name": "Delete",
+                                    "request": {
+                                        "method": "DELETE",
+                                        "header": [
+                                            {
+                                                "key": "Accept-Language",
+                                                "value": "{{lang}}"
+                                            },
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{user_token}}"
+                                            }
+                                        ],
+                                        "url": "{{base_url}}/api/user/posts/{{post_id}}",
+                                        "description": "Owner only."
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Actions",
+                            "description": "Like, comment, and report on `{{post_id}}`.",
+                            "item": [
+                                {
+                                    "name": "Toggle like",
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Accept-Language",
+                                                "value": "{{lang}}"
+                                            },
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{user_token}}"
+                                            }
+                                        ],
+                                        "url": "{{base_url}}/api/user/posts/{{post_id}}/like",
+                                        "description": "Toggles like. Response: **liked**, **likes_count**."
+                                    }
+                                },
+                                {
+                                    "name": "Add comment (free text only)",
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Accept-Language",
+                                                "value": "{{lang}}"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            },
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{user_token}}"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"body\": \"Comment without a preset.\"\n}"
+                                        },
+                                        "url": "{{base_url}}/api/user/posts/{{post_id}}/comments"
+                                    }
+                                },
+                                {
+                                    "name": "Add comment (preset ± text)",
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Accept-Language",
+                                                "value": "{{lang}}"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            },
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{user_token}}"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"comment_preset_id\": {{comment_preset_id}},\n  \"body\": \"Optional extra text with preset, or null for preset only.\"\n}"
+                                        },
+                                        "url": "{{base_url}}/api/user/posts/{{post_id}}/comments",
+                                        "description": "At least one of **comment_preset_id** or **body** required. Preset must be active (see Comment presets)."
+                                    }
+                                },
+                                {
+                                    "name": "Report post",
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Accept-Language",
+                                                "value": "{{lang}}"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            },
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{user_token}}"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"reason\": \"spam\",\n  \"details\": \"Optional longer explanation (max 5000 chars).\"\n}"
+                                        },
+                                        "url": "{{base_url}}/api/user/posts/{{post_id}}/report",
+                                        "description": "**reason** required (max 120). **details** optional. Cannot report own post."
+                                    }
+                                }
+                            ]
                         }
                     ]
                 },

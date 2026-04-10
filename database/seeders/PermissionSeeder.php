@@ -46,6 +46,22 @@ class PermissionSeeder extends Seeder
         ['key' => 'restore_users', 'name_ar' => 'استعادة مستخدم محذوف', 'name_en' => 'Restore deleted user'],
         ['key' => 'force_delete_users', 'name_ar' => 'حذف مستخدم نهائياً', 'name_en' => 'Permanently delete user'],
 
+        // ——— Posts ———
+        ['key' => 'view_posts', 'name_ar' => 'عرض المنشورات', 'name_en' => 'View posts'],
+        ['key' => 'create_posts', 'name_ar' => 'إضافة منشور', 'name_en' => 'Create post'],
+        ['key' => 'edit_posts', 'name_ar' => 'تعديل المنشورات', 'name_en' => 'Edit posts'],
+        ['key' => 'delete_posts', 'name_ar' => 'حذف المنشورات', 'name_en' => 'Delete posts'],
+        ['key' => 'restore_posts', 'name_ar' => 'استعادة المنشورات', 'name_en' => 'Restore posts'],
+        ['key' => 'force_delete_posts', 'name_ar' => 'حذف منشور نهائياً', 'name_en' => 'Permanently delete posts'],
+
+        // ——— Post comment presets ———
+        ['key' => 'view_post_comment_presets', 'name_ar' => 'عرض التعليقات الجاهزة', 'name_en' => 'View comment presets'],
+        ['key' => 'create_post_comment_presets', 'name_ar' => 'إضافة تعليق جاهز', 'name_en' => 'Create comment preset'],
+        ['key' => 'edit_post_comment_presets', 'name_ar' => 'تعديل تعليق جاهز', 'name_en' => 'Edit comment preset'],
+        ['key' => 'delete_post_comment_presets', 'name_ar' => 'حذف تعليق جاهز', 'name_en' => 'Delete comment preset'],
+        ['key' => 'restore_post_comment_presets', 'name_ar' => 'استعادة تعليق جاهز', 'name_en' => 'Restore comment preset'],
+        ['key' => 'force_delete_post_comment_presets', 'name_ar' => 'حذف تعليق جاهز نهائياً', 'name_en' => 'Permanently delete comment preset'],
+
         // ——— Support Tickets ———
         ['key' => 'view_support_tickets', 'name_ar' => 'عرض تذاكر الدعم', 'name_en' => 'View support tickets'],
         ['key' => 'create_support_tickets', 'name_ar' => 'إنشاء تذكرة دعم', 'name_en' => 'Create support ticket'],

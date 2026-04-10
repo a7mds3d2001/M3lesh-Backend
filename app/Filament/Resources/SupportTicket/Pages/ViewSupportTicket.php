@@ -21,6 +21,12 @@ class ViewSupportTicket extends ViewRecord
 {
     protected static string $resource = SupportTicketResource::class;
 
+    public function mount(int|string $record): void
+    {
+        parent::mount($record);
+        $this->getRecord()->loadMissing('post');
+    }
+
     public function hasCombinedRelationManagerTabsWithContent(): bool
     {
         return true;

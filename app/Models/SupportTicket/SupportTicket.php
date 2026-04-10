@@ -3,6 +3,7 @@
 namespace App\Models\SupportTicket;
 
 use App\Models\Concerns\HasAuditFields;
+use App\Models\Post\Post;
 use App\Models\User\Admin;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -29,6 +30,7 @@ class SupportTicket extends Model
     protected $fillable = [
         'ticket_number',
         'user_id',
+        'post_id',
         'visitor_name',
         'visitor_phone',
         'visitor_email',
@@ -77,6 +79,11 @@ class SupportTicket extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function post(): BelongsTo
+    {
+        return $this->belongsTo(Post::class);
     }
 
     public function logs(): HasMany

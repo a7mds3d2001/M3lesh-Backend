@@ -54,6 +54,7 @@ return [
         'content_and_support' => 'المحتوى والدعم',
         'system_services' => 'خدمات النظام',
         'notifications_management' => 'إدارة الإشعارات',
+        'posts_management' => 'إدارة المنشورات',
         'jobs_management' => 'إدارة الوظائف',
         'events_management' => 'إدارة الأحداث',
         'pending_listings' => 'قيد المراجعة',
@@ -295,6 +296,31 @@ return [
         'user_information' => 'معلومات المستخدم',
     ],
 
+    'post' => [
+        'nav' => 'المنشورات',
+        'singular' => 'منشور',
+        'section' => 'المنشور',
+        'body' => 'المحتوى',
+        'author' => 'الكاتب',
+        'likes_count' => 'الإعجابات',
+        'comments_count' => 'التعليقات',
+        'likes_tab' => 'الإعجابات',
+        'comments_tab' => 'التعليقات',
+        'like_singular' => 'إعجاب',
+        'comment_singular' => 'تعليق',
+        'liked_by' => 'المستخدم',
+        'commented_by' => 'المستخدم',
+        'comment_text' => 'نص التعليق',
+        'linked_post' => 'منشور مرتبط',
+    ],
+
+    'post_comment_preset' => [
+        'nav' => 'التعليقات',
+        'singular' => 'تعليق جاهز',
+        'section' => 'التعليق الجاهز',
+        'text' => 'النص',
+    ],
+
     // Support Tickets
     'support_ticket' => [
         'nav' => [
@@ -484,6 +510,22 @@ return [
         'delete_users' => 'حذف مستخدم',
         'restore_users' => 'استعادة مستخدم',
         'force_delete_users' => 'حذف مستخدم نهائياً',
+
+        // Posts
+        'view_posts' => 'عرض المنشورات',
+        'create_posts' => 'إضافة منشور',
+        'edit_posts' => 'تعديل المنشورات',
+        'delete_posts' => 'حذف المنشورات',
+        'restore_posts' => 'استعادة المنشورات',
+        'force_delete_posts' => 'حذف منشور نهائياً',
+
+        // Post comment presets
+        'view_post_comment_presets' => 'عرض التعليقات الجاهزة',
+        'create_post_comment_presets' => 'إضافة تعليق جاهز',
+        'edit_post_comment_presets' => 'تعديل تعليق جاهز',
+        'delete_post_comment_presets' => 'حذف تعليق جاهز',
+        'restore_post_comment_presets' => 'استعادة تعليق جاهز',
+        'force_delete_post_comment_presets' => 'حذف تعليق جاهز نهائياً',
 
         // Transportation Management (وسائل النقل)
         'view_transportation_areas' => 'عرض مناطق وسائل النقل',

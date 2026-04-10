@@ -28,7 +28,7 @@ class SupportTicketController extends Controller
         $this->authorize('viewAny', SupportTicket::class);
 
         $query = SupportTicket::query()
-            ->with(['user'])
+            ->with(['user', 'post'])
             ->withAudit()
             ->byStatus($request->input('status'))
             ->byPriority($request->input('priority'))
@@ -65,7 +65,7 @@ class SupportTicketController extends Controller
     public function show(Request $request, SupportTicket $support_ticket): JsonResponse
     {
         $this->authorize('view', $support_ticket);
-        $support_ticket->load(['user', 'logs.actor', 'creator', 'updater']);
+        $support_ticket->load(['user', 'post', 'logs.actor', 'creator', 'updater']);
 
         return SupportTicketResource::make($support_ticket)->response($request);
     }
@@ -78,7 +78,7 @@ class SupportTicketController extends Controller
         unset($validated['status']);
         $support_ticket->update($validated);
 
-        $support_ticket->load(['user', 'logs.actor'])->loadAudit();
+        $support_ticket->load(['user', 'post', 'logs.actor'])->loadAudit();
 
         return SupportTicketResource::make($support_ticket)->response($request);
     }

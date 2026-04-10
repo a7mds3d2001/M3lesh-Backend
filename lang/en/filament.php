@@ -54,6 +54,7 @@ return [
         'content_and_support' => 'Content & Support',
         'system_services' => 'System Services',
         'notifications_management' => 'Notifications Management',
+        'posts_management' => 'Posts management',
         'jobs_management' => 'Jobs Management',
         'events_management' => 'Events Management',
         'pending_listings' => 'Pending',
@@ -295,6 +296,31 @@ return [
         'user_information' => 'User Information',
     ],
 
+    'post' => [
+        'nav' => 'Posts',
+        'singular' => 'Post',
+        'section' => 'Post',
+        'body' => 'Content',
+        'author' => 'Author',
+        'likes_count' => 'Likes',
+        'comments_count' => 'Comments',
+        'likes_tab' => 'Likes',
+        'comments_tab' => 'Comments',
+        'like_singular' => 'Like',
+        'comment_singular' => 'Comment',
+        'liked_by' => 'User',
+        'commented_by' => 'User',
+        'comment_text' => 'Comment',
+        'linked_post' => 'Linked post',
+    ],
+
+    'post_comment_preset' => [
+        'nav' => 'Comments',
+        'singular' => 'Comment preset',
+        'section' => 'Comment preset',
+        'text' => 'Text',
+    ],
+
     // Support Tickets
     'support_ticket' => [
         'nav' => [
@@ -484,6 +510,22 @@ return [
         'delete_users' => 'Delete user',
         'restore_users' => 'Restore user',
         'force_delete_users' => 'Permanently delete user',
+
+        // Posts
+        'view_posts' => 'View posts',
+        'create_posts' => 'Create post',
+        'edit_posts' => 'Edit posts',
+        'delete_posts' => 'Delete posts',
+        'restore_posts' => 'Restore posts',
+        'force_delete_posts' => 'Permanently delete posts',
+
+        // Post comment presets
+        'view_post_comment_presets' => 'View comment presets',
+        'create_post_comment_presets' => 'Add comment preset',
+        'edit_post_comment_presets' => 'Edit comment preset',
+        'delete_post_comment_presets' => 'Delete comment preset',
+        'restore_post_comment_presets' => 'Restore comment preset',
+        'force_delete_post_comment_presets' => 'Permanently delete comment preset',
 
         // Transport Management
         'view_transportation_areas' => 'View transportation areas',
