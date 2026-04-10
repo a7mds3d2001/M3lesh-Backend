@@ -99,6 +99,12 @@ Route::prefix('user')->group(function (): void {
     Route::post('register', [UserAuthController::class, 'register']);
     Route::post('login', [UserAuthController::class, 'login']);
 
+    Route::middleware('optional.sanctum')->group(function (): void {
+        Route::get('posts', [UserPostController::class, 'index']);
+        Route::get('posts/{post}', [UserPostController::class, 'show'])->whereNumber('post');
+        Route::get('posts/{post}/comments', [UserPostController::class, 'commentsIndex'])->whereNumber('post');
+    });
+
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('me', [UserAuthController::class, 'me']);
         Route::put('me', [UserAuthController::class, 'update']);
@@ -119,13 +125,10 @@ Route::prefix('user')->group(function (): void {
 
         Route::get('comment-presets', [UserPostCommentPresetController::class, 'index']);
         Route::get('posts/mine', [UserPostController::class, 'mine']);
-        Route::get('posts', [UserPostController::class, 'index']);
         Route::post('posts', [UserPostController::class, 'store']);
-        Route::get('posts/{post}', [UserPostController::class, 'show']);
         Route::put('posts/{post}', [UserPostController::class, 'update']);
         Route::delete('posts/{post}', [UserPostController::class, 'destroy']);
         Route::post('posts/{post}/like', [UserPostController::class, 'toggleLike']);
-        Route::get('posts/{post}/comments', [UserPostController::class, 'commentsIndex']);
         Route::post('posts/{post}/comments', [UserPostController::class, 'commentsStore']);
         Route::post('posts/{post}/report', [UserPostController::class, 'report']);
     });

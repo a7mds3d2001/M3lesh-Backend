@@ -4,6 +4,7 @@ namespace Tests\Feature\Api\Post;
 
 use App\Models\Notifications\Notification;
 use App\Models\Post\Post;
+use App\Models\Post\PostComment;
 use App\Models\Post\PostCommentPreset;
 use App\Models\SupportTicket\SupportTicket;
 use App\Models\User\User;
@@ -66,6 +67,39 @@ class PostApiTest extends TestCase
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.body', 'Public');
+    }
+
+    public function test_guest_can_browse_feed_show_and_comments_without_token(): void
+    {
+        $post = Post::factory()->create([
+            'user_id' => $this->author->id,
+            'body' => 'For visitors',
+            'is_active' => true,
+            'comments_count' => 3,
+        ]);
+        Post::factory()->create(['user_id' => $this->author->id, 'is_active' => false]);
+
+        PostComment::create(['post_id' => $post->id, 'user_id' => $this->other->id, 'body' => 'c1', 'preset_text_snapshot' => null]);
+        PostComment::create(['post_id' => $post->id, 'user_id' => $this->author->id, 'body' => 'c2', 'preset_text_snapshot' => null]);
+        PostComment::create(['post_id' => $post->id, 'user_id' => $this->other->id, 'body' => 'c3', 'preset_text_snapshot' => null]);
+
+        $this->getJson('/api/user/posts')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.body', 'For visitors')
+            ->assertJsonPath('data.0.liked_by_me', false)
+            ->assertJsonCount(2, 'data.0.recent_comments')
+            ->assertJsonPath('data.0.recent_comments.0.body', 'c3')
+            ->assertJsonPath('data.0.recent_comments.1.body', 'c2');
+
+        $this->getJson("/api/user/posts/{$post->id}")
+            ->assertOk()
+            ->assertJsonPath('data.body', 'For visitors')
+            ->assertJsonPath('data.liked_by_me', false)
+            ->assertJsonCount(3, 'data.recent_comments');
+
+        $this->getJson("/api/user/posts/{$post->id}/comments")
+            ->assertOk();
     }
 
     public function test_reporter_creates_ticket_and_post_report(): void

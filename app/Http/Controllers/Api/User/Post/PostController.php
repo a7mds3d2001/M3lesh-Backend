@@ -20,6 +20,8 @@ use App\Services\Notifications\NotificationService;
 use App\Services\Post\PostReportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
@@ -34,10 +36,15 @@ class PostController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        $user = $request->user('sanctum');
+
         $query = Post::query()
             ->feed()
-            ->with(['user'])
-            ->withCount(['likes as liked_by_me' => fn ($q) => $q->where('user_id', $request->user()->id)]);
+            ->with(['user']);
+
+        if ($user instanceof User) {
+            $query->withCount(['likes as liked_by_me' => fn ($q) => $q->where('user_id', $user->id)]);
+        }
 
         $query = $this->applySort($query, $request, self::SORT_ALLOWED);
         if (! $request->has('sort_by')) {
@@ -45,6 +52,7 @@ class PostController extends Controller
         }
 
         $paginator = $query->paginate($this->getPerPage($request));
+        $this->attachRecentCommentsToPosts($paginator->getCollection(), 2);
         $paginator->through(fn (Post $post) => PostResource::make($post)->resolve($request));
 
         return response()->json($paginator);
@@ -63,6 +71,7 @@ class PostController extends Controller
         }
 
         $paginator = $query->paginate($this->getPerPage($request));
+        $this->attachRecentCommentsToPosts($paginator->getCollection(), 2);
         $paginator->through(fn (Post $post) => PostResource::make($post)->resolve($request));
 
         return response()->json($paginator);
@@ -77,16 +86,21 @@ class PostController extends Controller
         ]);
         $post->load('user');
         $post->loadCount(['likes as liked_by_me' => fn ($q) => $q->where('user_id', $request->user()->id)]);
+        $this->loadRecentCommentsForPost($post, 10);
 
         return PostResource::make($post)->response($request)->setStatusCode(201);
     }
 
     public function show(Request $request, Post $post): JsonResponse
     {
-        $this->authorize('view', $post);
+        Gate::forUser($request->user('sanctum'))->authorize('view', $post);
 
+        $user = $request->user('sanctum');
         $post->load('user');
-        $post->loadCount(['likes as liked_by_me' => fn ($q) => $q->where('user_id', $request->user()->id)]);
+        if ($user instanceof User) {
+            $post->loadCount(['likes as liked_by_me' => fn ($q) => $q->where('user_id', $user->id)]);
+        }
+        $this->loadRecentCommentsForPost($post, 10);
 
         return PostResource::make($post)->response($request);
     }
@@ -98,6 +112,7 @@ class PostController extends Controller
         $post->update($request->validated());
         $post->load('user');
         $post->loadCount(['likes as liked_by_me' => fn ($q) => $q->where('user_id', $request->user()->id)]);
+        $this->loadRecentCommentsForPost($post, 10);
 
         return PostResource::make($post)->response($request);
     }
@@ -153,7 +168,7 @@ class PostController extends Controller
 
     public function commentsIndex(Request $request, Post $post): JsonResponse
     {
-        $this->authorize('view', $post);
+        Gate::forUser($request->user('sanctum'))->authorize('view', $post);
 
         $query = PostComment::query()
             ->where('post_id', $post->id)
@@ -227,5 +242,37 @@ class PostController extends Controller
         $ticket = $result['ticket']->load(['user', 'post', 'logs.actor', 'creator', 'updater']);
 
         return SupportTicketResource::make($ticket)->response($request)->setStatusCode(201);
+    }
+
+    /**
+     * @param  Collection<int, Post>  $posts
+     */
+    private function attachRecentCommentsToPosts(Collection $posts, int $limit): void
+    {
+        if ($posts->isEmpty()) {
+            return;
+        }
+
+        $postIds = $posts->pluck('id')->all();
+        $grouped = PostComment::query()
+            ->with('user')
+            ->whereIn('post_id', $postIds)
+            ->orderByDesc('created_at')
+            ->get()
+            ->groupBy('post_id');
+
+        foreach ($posts as $post) {
+            $recent = $grouped->get($post->id, collect())->take($limit)->values();
+            $post->setRelation('recentComments', $recent);
+        }
+    }
+
+    private function loadRecentCommentsForPost(Post $post, int $limit): void
+    {
+        $recent = $post->comments()
+            ->with('user')
+            ->limit($limit)
+            ->get();
+        $post->setRelation('recentComments', $recent);
     }
 }

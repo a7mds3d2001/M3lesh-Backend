@@ -1777,7 +1777,7 @@
         },
         {
             "name": "User",
-            "description": "User APIs under /api/user: auth, profile, devices, notifications, **posts** (**Browse** / **My posts** / **Actions**), **comment presets**, content pages, support tickets.",
+            "description": "User APIs under /api/user: auth, profile, devices, notifications, **posts** (Browse is public; My posts & Actions need token), **comment presets**, content pages, support tickets.",
             "item": [
                 {
                     "name": "Auth",
@@ -2176,11 +2176,11 @@
                 },
                 {
                     "name": "Posts",
-                    "description": "**Browse** — feed: list, details, comments list. **My posts** — list, details, create, update, delete. **Actions** — like, comment (add), report. **Create** saves `post_id` on 201.",
+                    "description": "**Browse** — public feed, post details, comments (optional token for **liked_by_me**). **My posts** — auth. **Actions** — auth. **Create** saves `post_id` on 201.",
                     "item": [
                         {
                             "name": "Browse",
-                            "description": "Active posts feed, single post, and comments list. Query: `per_page`, `page`, `sort_by`, `sort_order`.",
+                            "description": "**Public** — no `Authorization` required. Optional Bearer `{{user_token}}` to populate **liked_by_me**. Query: `per_page`, `page`, `sort_by`, `sort_order`.",
                             "item": [
                                 {
                                     "name": "List",
@@ -2190,10 +2190,6 @@
                                             {
                                                 "key": "Accept-Language",
                                                 "value": "{{lang}}"
-                                            },
-                                            {
-                                                "key": "Authorization",
-                                                "value": "Bearer {{user_token}}"
                                             }
                                         ],
                                         "url": {
@@ -2238,10 +2234,6 @@
                                             {
                                                 "key": "Accept-Language",
                                                 "value": "{{lang}}"
-                                            },
-                                            {
-                                                "key": "Authorization",
-                                                "value": "Bearer {{user_token}}"
                                             }
                                         ],
                                         "url": "{{base_url}}/api/user/posts/{{post_id}}"
@@ -2255,10 +2247,6 @@
                                             {
                                                 "key": "Accept-Language",
                                                 "value": "{{lang}}"
-                                            },
-                                            {
-                                                "key": "Authorization",
-                                                "value": "Bearer {{user_token}}"
                                             }
                                         ],
                                         "url": {
