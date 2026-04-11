@@ -123,7 +123,9 @@ class PostApiTest extends TestCase
         ]);
 
         $response->assertCreated()
-            ->assertJsonPath('data.post_id', $post->id);
+            ->assertJsonPath('data.post_id', $post->id)
+            ->assertJsonPath('data.post_report.reason', 'spam')
+            ->assertJsonPath('data.post_report.reason_label_en', 'Spam or advertising');
 
         $ticketId = $response->json('data.id');
         $this->assertNotNull($ticketId);
@@ -131,6 +133,7 @@ class PostApiTest extends TestCase
             'post_id' => $post->id,
             'reporter_id' => $this->other->id,
             'support_ticket_id' => $ticketId,
+            'reason' => 'spam',
         ]);
         $this->assertDatabaseHas('support_tickets', [
             'id' => $ticketId,
@@ -144,8 +147,17 @@ class PostApiTest extends TestCase
         $post = Post::factory()->create(['user_id' => $this->author->id, 'is_active' => true]);
 
         $this->withToken($this->authorToken)->postJson("/api/user/posts/{$post->id}/report", [
-            'reason' => 'test',
+            'reason' => 'spam',
         ])->assertForbidden();
+    }
+
+    public function test_report_rejects_invalid_reason_enum(): void
+    {
+        $post = Post::factory()->create(['user_id' => $this->author->id, 'is_active' => true]);
+
+        $this->withToken($this->otherToken)->postJson("/api/user/posts/{$post->id}/report", [
+            'reason' => 'not_a_valid_reason',
+        ])->assertUnprocessable();
     }
 
     public function test_comment_with_preset_and_free_text(): void

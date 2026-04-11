@@ -2,6 +2,7 @@
 
 namespace App\Services\Post;
 
+use App\Enums\Post\PostReportReason;
 use App\Models\Post\Post;
 use App\Models\Post\PostReport;
 use App\Models\SupportTicket\SupportTicket;
@@ -20,14 +21,15 @@ class PostReportService
     /**
      * @return array{ticket: SupportTicket, report: PostReport}
      */
-    public function report(Post $post, User $reporter, string $reason, ?string $details): array
+    public function report(Post $post, User $reporter, PostReportReason $reason, ?string $details): array
     {
         if (PostReport::query()->where('post_id', $post->id)->where('reporter_id', $reporter->id)->exists()) {
             abort(422, 'You have already reported this post.');
         }
 
         $details = $details !== null ? trim($details) : null;
-        $message = "[Post report] Post #{$post->id}\nReason: {$reason}";
+        $reasonLine = $reason->value.' — '.$reason->labelsBilingual();
+        $message = "[Post report] Post #{$post->id}\nReason: {$reasonLine}";
         if ($details !== null && $details !== '') {
             $message .= "\nDetails: {$details}";
         }
@@ -59,7 +61,7 @@ class PostReportService
                 'post_id' => $post->id,
                 'reporter_id' => $reporter->id,
                 'support_ticket_id' => $ticket->id,
-                'reason' => $reason,
+                'reason' => $reason->value,
                 'details' => $details,
             ]);
 

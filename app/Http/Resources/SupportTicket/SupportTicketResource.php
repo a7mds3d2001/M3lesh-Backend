@@ -25,6 +25,22 @@ class SupportTicketResource extends JsonResource
             'user_id' => $this->user_id,
             'post_id' => $this->post_id,
             'post' => $this->whenLoaded('post', fn () => PostResource::make($this->post)->resolve($request)),
+            'post_report' => $this->when(
+                $this->relationLoaded('postReport') && $this->postReport !== null,
+                function () {
+                    /** @var \App\Models\Post\PostReport $pr */
+                    $pr = $this->postReport;
+                    $reason = $pr->reason;
+
+                    return [
+                        'reason' => $reason->value,
+                        'reason_label' => $reason->label(),
+                        'reason_label_en' => $reason->label('en'),
+                        'reason_label_ar' => $reason->label('ar'),
+                        'details' => $pr->details,
+                    ];
+                },
+            ),
             'visitor_name' => $this->visitor_name,
             'visitor_phone' => $this->visitor_phone,
             'visitor_email' => $this->visitor_email,

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\User\Post;
 
+use App\Enums\Post\PostReportReason;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Post\ReportPostRequest;
 use App\Http\Requests\Post\StorePostCommentRequest;
@@ -235,11 +236,11 @@ class PostController extends Controller
         $result = $postReportService->report(
             $post,
             $request->user(),
-            $validated['reason'],
+            PostReportReason::from($validated['reason']),
             $validated['details'] ?? null,
         );
 
-        $ticket = $result['ticket']->load(['user', 'post', 'logs.actor', 'creator', 'updater']);
+        $ticket = $result['ticket']->load(['user', 'post', 'postReport', 'logs.actor', 'creator', 'updater']);
 
         return SupportTicketResource::make($ticket)->response($request)->setStatusCode(201);
     }

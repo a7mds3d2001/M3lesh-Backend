@@ -24,7 +24,7 @@ class ViewSupportTicket extends ViewRecord
     public function mount(int|string $record): void
     {
         parent::mount($record);
-        $this->getRecord()->loadMissing('post');
+        $this->getRecord()->loadMissing(['post', 'postReport']);
     }
 
     public function hasCombinedRelationManagerTabsWithContent(): bool

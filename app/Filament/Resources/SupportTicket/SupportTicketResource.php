@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SupportTicket;
 
+use App\Enums\Post\PostReportReason;
 use App\Filament\Resources\Post\PostResource as FilamentPostResource;
 use App\Filament\Resources\SupportTicket\Pages\ListSupportTickets;
 use App\Filament\Resources\SupportTicket\Pages\ViewSupportTicket;
@@ -135,6 +136,32 @@ class SupportTicketResource extends Resource
                                 ? FilamentPostResource::getUrl('view', ['record' => $record->post_id])
                                 : null)
                             ->visible(fn (SupportTicket $record): bool => (bool) $record->post_id),
+
+                        TextEntry::make('post_report_reason_display')
+                            ->label(__('filament.support_ticket.post_report_reason'))
+                            ->getStateUsing(function (SupportTicket $record): string {
+                                $record->loadMissing('postReport');
+                                if (! $record->postReport) {
+                                    return '—';
+                                }
+                                $reason = $record->postReport->reason;
+                                if (! $reason instanceof PostReportReason) {
+                                    return '—';
+                                }
+
+                                return $reason->labelsBilingual();
+                            })
+                            ->visible(fn (SupportTicket $record): bool => (bool) $record->post_id),
+
+                        TextEntry::make('post_report_details_display')
+                            ->label(__('filament.support_ticket.post_report_details'))
+                            ->getStateUsing(function (SupportTicket $record): ?string {
+                                $record->loadMissing('postReport');
+
+                                return $record->postReport?->details;
+                            })
+                            ->placeholder('—')
+                            ->visible(fn (SupportTicket $record): bool => (bool) $record->post_id && (bool) $record->postReport?->details),
 
                         RepeatableEntry::make('attachments')
                             ->label(__('filament.support_ticket.attachments'))

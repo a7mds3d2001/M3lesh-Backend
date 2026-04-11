@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Post;
 
+use App\Enums\Post\PostReportReason;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class ReportPostRequest extends FormRequest
 {
@@ -17,7 +19,7 @@ class ReportPostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'reason' => ['required', 'string', 'max:120'],
+            'reason' => ['required', new Enum(PostReportReason::class)],
             'details' => ['nullable', 'string', 'max:5000'],
         ];
     }

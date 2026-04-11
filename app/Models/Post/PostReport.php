@@ -2,6 +2,7 @@
 
 namespace App\Models\Post;
 
+use App\Enums\Post\PostReportReason;
 use App\Models\SupportTicket\SupportTicket;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -33,5 +34,12 @@ class PostReport extends Model
     public function supportTicket(): BelongsTo
     {
         return $this->belongsTo(SupportTicket::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'reason' => PostReportReason::class,
+        ];
     }
 }

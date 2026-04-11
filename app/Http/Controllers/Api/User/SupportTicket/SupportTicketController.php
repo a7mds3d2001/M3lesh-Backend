@@ -26,7 +26,7 @@ class SupportTicketController extends Controller
     {
         $query = SupportTicket::query()
             ->where('user_id', $request->user()->id)
-            ->with(['user', 'creator', 'updater']);
+            ->with(['user', 'creator', 'updater', 'postReport']);
 
         if ($request->filled('status')) {
             $query->where('status', $request->input('status'));
@@ -89,7 +89,7 @@ class SupportTicketController extends Controller
             'target_id' => $ticket->id,
         ]);
 
-        $ticket->load($user ? ['user', 'post', 'logs.actor', 'creator', 'updater'] : ['logs']);
+        $ticket->load($user ? ['user', 'post', 'postReport', 'logs.actor', 'creator', 'updater'] : ['logs']);
 
         return SupportTicketResource::make($ticket)->response($request)->setStatusCode(201);
     }
@@ -97,7 +97,7 @@ class SupportTicketController extends Controller
     public function show(Request $request, SupportTicket $support_ticket): JsonResponse
     {
         $this->ensureOwn($support_ticket, $request);
-        $support_ticket->load(['user', 'post', 'logs.actor', 'creator', 'updater']);
+        $support_ticket->load(['user', 'post', 'postReport', 'logs.actor', 'creator', 'updater']);
 
         return SupportTicketResource::make($support_ticket)->response($request);
     }
@@ -135,7 +135,7 @@ class SupportTicketController extends Controller
             'target_id' => $support_ticket->id,
         ]);
 
-        $support_ticket->load(['user', 'post', 'logs.actor', 'creator', 'updater']);
+        $support_ticket->load(['user', 'post', 'postReport', 'logs.actor', 'creator', 'updater']);
 
         return SupportTicketResource::make($support_ticket)->response($request);
     }

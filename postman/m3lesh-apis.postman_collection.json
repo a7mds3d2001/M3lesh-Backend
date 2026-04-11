@@ -2530,7 +2530,7 @@
                                             "raw": "{\n  \"reason\": \"spam\",\n  \"details\": \"Optional longer explanation (max 5000 chars).\"\n}"
                                         },
                                         "url": "{{base_url}}/api/user/posts/{{post_id}}/report",
-                                        "description": "**reason** required (max 120). **details** optional. Cannot report own post."
+                                        "description": "**reason** (required): must be one of these string values —\n`spam` · `harassment` · `hate_speech` · `violence` · `misinformation` · `nudity_or_sexual` · `illegal_content` · `copyright` · `impersonation` · `self_harm`\n\n**details** optional (max 5000). Response includes `post_report.reason`, `reason_label`, `reason_label_en`, `reason_label_ar`. Cannot report own post."
                                     }
                                 }
                             ]

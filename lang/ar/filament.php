@@ -372,6 +372,24 @@ return [
         'actor_admin' => 'مسؤول',
         'actor_user' => 'مستخدم',
         'actions_menu' => 'إجراءات',
+        'post_report_reason' => 'سبب البلاغ',
+        'post_report_details' => 'تفاصيل إضافية من المُبلّغ',
+    ],
+
+    // Post report reasons (user API + support tickets)
+    'post_reports' => [
+        'reasons' => [
+            'spam' => 'محتوى دعائي أو سبام',
+            'harassment' => 'تحرش أو تنمر',
+            'hate_speech' => 'خطاب كراهية',
+            'violence' => 'عنف أو تهديدات',
+            'misinformation' => 'معلومات مضللة',
+            'nudity_or_sexual' => 'محتوى جنسي أو عري',
+            'illegal_content' => 'محتوى غير قانوني',
+            'copyright' => 'انتهاك حقوق نشر أو ملكية',
+            'impersonation' => 'انتحال شخصية',
+            'self_harm' => 'إيذاء النفس أو سلوك خطير',
+        ],
     ],
 
     // Placeholders & filters
@@ -672,6 +690,7 @@ return [
         'reject' => 'رفض',
         'reject_confirm' => 'رفض هذا السجل؟ لن يتم نشره.',
         'created_by_user' => 'المستخدم',
+        'not_owner' => 'أنت لست مالك هذا السجل في الدليل.',
     ],
 
     // Job Listings

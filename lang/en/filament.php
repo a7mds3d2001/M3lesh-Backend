@@ -372,6 +372,24 @@ return [
         'actor_admin' => 'Admin',
         'actor_user' => 'User',
         'actions_menu' => 'Actions',
+        'post_report_reason' => 'Report reason',
+        'post_report_details' => 'Reporter details',
+    ],
+
+    // Post report reasons (user API + support tickets)
+    'post_reports' => [
+        'reasons' => [
+            'spam' => 'Spam or advertising',
+            'harassment' => 'Harassment or bullying',
+            'hate_speech' => 'Hate speech',
+            'violence' => 'Violence or threats',
+            'misinformation' => 'Misinformation',
+            'nudity_or_sexual' => 'Nudity or sexual content',
+            'illegal_content' => 'Illegal content',
+            'copyright' => 'Copyright infringement',
+            'impersonation' => 'Impersonation',
+            'self_harm' => 'Self-harm or dangerous acts',
+        ],
     ],
 
     // Placeholders & filters
@@ -672,6 +690,7 @@ return [
         'reject' => 'Reject',
         'reject_confirm' => 'Reject this listing? It will not be published.',
         'created_by_user' => 'User',
+        'not_owner' => 'You do not own this directory listing.',
     ],
 
     // Job Listings
