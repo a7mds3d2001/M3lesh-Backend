@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies;
+namespace App\Policies\Post;
 
 use App\Models\Post\PostCommentPreset;
 use Illuminate\Contracts\Auth\Authenticatable;

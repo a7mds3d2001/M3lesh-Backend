@@ -1,7 +1,7 @@
 {
     "info": {
         "name": "M3lesh APIs",
-        "description": "Admin: `/api/admin` with Bearer token — includes **posts** and **post-comment-presets** APIs plus Filament (`/admin`).\\nUser: `/api/user` — auth, **posts** (Browse / My posts / Actions), **comment-presets** (read-only list).\\nVariables: base_url, admin_token, user_token, lang, post_id, comment_preset_id, comment_id, like_id.",
+        "description": "Admin: `/api/admin` with Bearer token — includes **posts** and **post-comment-presets** APIs plus Filament (`/admin`).\\nUser: `/api/user` — auth, **posts** (Browse / My posts / Actions), **comment-presets** (read-only list). **Delete my comment:** `DELETE /api/user/posts/{post}/comments/{comment}` (Bearer `user_token`, comment author only).\\nVariables: base_url, admin_token, user_token, lang, post_id, comment_preset_id, comment_id, like_id.",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "variable": [
@@ -2436,7 +2436,7 @@
                         },
                         {
                             "name": "Actions",
-                            "description": "Like, comment, and report on `{{post_id}}`.",
+                            "description": "Like, comment, delete **your** comment, and report on `{{post_id}}`. **Add comment** test scripts save `comment_id` on `201`.",
                             "item": [
                                 {
                                     "name": "Toggle like",
@@ -2458,6 +2458,22 @@
                                 },
                                 {
                                     "name": "Add comment (free text only)",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "exec": [
+                                                    "if (pm.response.code === 201) {",
+                                                    "    const j = pm.response.json();",
+                                                    "    if (j.data && j.data.id) {",
+                                                    "        pm.collectionVariables.set('comment_id', String(j.data.id));",
+                                                    "    }",
+                                                    "}"
+                                                ],
+                                                "type": "text/javascript"
+                                            }
+                                        }
+                                    ],
                                     "request": {
                                         "method": "POST",
                                         "header": [
@@ -2483,6 +2499,22 @@
                                 },
                                 {
                                     "name": "Add comment (preset ± text)",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "exec": [
+                                                    "if (pm.response.code === 201) {",
+                                                    "    const j = pm.response.json();",
+                                                    "    if (j.data && j.data.id) {",
+                                                    "        pm.collectionVariables.set('comment_id', String(j.data.id));",
+                                                    "    }",
+                                                    "}"
+                                                ],
+                                                "type": "text/javascript"
+                                            }
+                                        }
+                                    ],
                                     "request": {
                                         "method": "POST",
                                         "header": [
@@ -2505,6 +2537,24 @@
                                         },
                                         "url": "{{base_url}}/api/user/posts/{{post_id}}/comments",
                                         "description": "At least one of **comment_preset_id** or **body** required. Preset must be active (see Comment presets)."
+                                    }
+                                },
+                                {
+                                    "name": "Delete my comment",
+                                    "request": {
+                                        "method": "DELETE",
+                                        "header": [
+                                            {
+                                                "key": "Accept-Language",
+                                                "value": "{{lang}}"
+                                            },
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{user_token}}"
+                                            }
+                                        ],
+                                        "url": "{{base_url}}/api/user/posts/{{post_id}}/comments/{{comment_id}}",
+                                        "description": "Deletes **only** a comment authored by the current user. Path **comment** id must belong to **post**. Success: **204** empty body. **403** if the comment is someone else's. **404** if ids do not match or the comment does not exist."
                                     }
                                 },
                                 {

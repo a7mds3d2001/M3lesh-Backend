@@ -130,6 +130,7 @@ Route::prefix('user')->group(function (): void {
         Route::delete('posts/{post}', [UserPostController::class, 'destroy']);
         Route::post('posts/{post}/like', [UserPostController::class, 'toggleLike']);
         Route::post('posts/{post}/comments', [UserPostController::class, 'commentsStore']);
+        Route::delete('posts/{post}/comments/{comment}', [UserPostController::class, 'commentsDestroy'])->whereNumber('post')->whereNumber('comment');
         Route::post('posts/{post}/report', [UserPostController::class, 'report']);
     });
 

@@ -228,6 +228,20 @@ class PostController extends Controller
         return PostCommentResource::make($comment)->response($request)->setStatusCode(201);
     }
 
+    public function commentsDestroy(Request $request, Post $post, PostComment $comment): JsonResponse
+    {
+        if ($comment->post_id !== $post->id) {
+            abort(404);
+        }
+
+        $this->authorize('delete', $comment);
+
+        $post->decrement('comments_count');
+        $comment->delete();
+
+        return response()->json(null, 204);
+    }
+
     public function report(ReportPostRequest $request, Post $post, PostReportService $postReportService): JsonResponse
     {
         $this->authorize('report', $post);

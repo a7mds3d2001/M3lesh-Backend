@@ -220,4 +220,53 @@ class PostApiTest extends TestCase
             'target_id' => $post->id,
         ]);
     }
+
+    public function test_user_can_delete_own_comment(): void
+    {
+        $post = Post::factory()->create(['user_id' => $this->author->id, 'is_active' => true, 'comments_count' => 1]);
+        $comment = PostComment::create([
+            'post_id' => $post->id,
+            'user_id' => $this->other->id,
+            'body' => 'Mine to remove',
+            'preset_text_snapshot' => null,
+        ]);
+
+        $this->withToken($this->otherToken)->deleteJson("/api/user/posts/{$post->id}/comments/{$comment->id}")
+            ->assertNoContent();
+
+        $this->assertDatabaseMissing('post_comments', ['id' => $comment->id]);
+        $this->assertSame(0, $post->fresh()->comments_count);
+    }
+
+    public function test_user_cannot_delete_someone_elses_comment(): void
+    {
+        $post = Post::factory()->create(['user_id' => $this->author->id, 'is_active' => true, 'comments_count' => 1]);
+        $comment = PostComment::create([
+            'post_id' => $post->id,
+            'user_id' => $this->author->id,
+            'body' => 'Author comment',
+            'preset_text_snapshot' => null,
+        ]);
+
+        $this->withToken($this->otherToken)->deleteJson("/api/user/posts/{$post->id}/comments/{$comment->id}")
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('post_comments', ['id' => $comment->id]);
+        $this->assertSame(1, $post->fresh()->comments_count);
+    }
+
+    public function test_delete_comment_returns_404_when_comment_belongs_to_another_post(): void
+    {
+        $postA = Post::factory()->create(['user_id' => $this->author->id, 'is_active' => true, 'comments_count' => 0]);
+        $postB = Post::factory()->create(['user_id' => $this->author->id, 'is_active' => true, 'comments_count' => 1]);
+        $commentOnB = PostComment::create([
+            'post_id' => $postB->id,
+            'user_id' => $this->other->id,
+            'body' => 'On B',
+            'preset_text_snapshot' => null,
+        ]);
+
+        $this->withToken($this->otherToken)->deleteJson("/api/user/posts/{$postA->id}/comments/{$commentOnB->id}")
+            ->assertNotFound();
+    }
 }
