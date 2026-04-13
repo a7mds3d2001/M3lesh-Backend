@@ -16,9 +16,9 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Schema;
 use Illuminate\Validation\Rules\Unique;
-use Livewire\Component as Livewire;
 
 class RoleForm
 {
@@ -32,19 +32,21 @@ class RoleForm
                     ->schema([
                         Section::make()
                             ->schema([
-                                TextInput::make('name')
-                                    ->label(__('filament-shield::filament-shield.field.name'))
-                                    ->unique(
-                                        ignoreRecord: true,
-                                        modifyRuleUsing: fn (Unique $rule): Unique => Utils::isTenancyEnabled() ? $rule->where(Utils::getTenantModelForeignKey(), Filament::getTenant()?->getKey()) : $rule,
-                                    )
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->dehydrated(false)
-                                    ->visible(false),
                                 TextInput::make('name_en')
                                     ->label(__('filament.role.name_en'))
                                     ->required()
+                                    ->unique(
+                                        ignoreRecord: true,
+                                        modifyRuleUsing: fn (Unique $rule): Unique => (function () use ($rule): Unique {
+                                            $rule = $rule->where('guard_name', Utils::getFilamentAuthGuard());
+
+                                            if (Utils::isTenancyEnabled()) {
+                                                $rule = $rule->where(Utils::getTenantModelForeignKey(), Filament::getTenant()?->getKey());
+                                            }
+
+                                            return $rule;
+                                        })(),
+                                    )
                                     ->maxLength(255),
                                 TextInput::make('name_ar')
                                     ->label(__('filament.role.name_ar'))
@@ -66,17 +68,8 @@ class RoleForm
                                     ->label(__('filament-shield::filament-shield.field.select_all.name'))
                                     ->helperText(__('filament-shield::filament-shield.field.select_all.message'))
                                     ->live()
-                                    ->afterStateUpdated(function (Livewire $livewire, Set $set, bool $state): void {
-                                        if (! method_exists($livewire, 'getForm')) {
-                                            return;
-                                        }
-
-                                        $checkboxLists = collect($livewire->getForm('form')->getFlatComponents())
-                                            ->filter(fn ($component): bool => $component instanceof CheckboxList);
-
-                                        $checkboxLists->each(function (CheckboxList $component) use ($set, $state): void {
-                                            $set($component->getName(), $state ? array_keys($component->getOptions()) : []);
-                                        });
+                                    ->afterStateUpdated(function (HasSchemas $livewire, Set $set, bool $state): void {
+                                        static::syncShieldCheckboxListsFromSelectAll($livewire, $set, $state);
                                     })
                                     ->dehydrated(false),
                             ])
@@ -89,5 +82,22 @@ class RoleForm
                     ->columnSpanFull(),
                 static::getShieldFormComponents(),
             ]);
+    }
+
+    protected static function syncShieldCheckboxListsFromSelectAll(HasSchemas $livewire, Set $set, bool $state): void
+    {
+        $form = $livewire->getSchema('form');
+        if ($form === null) {
+            return;
+        }
+
+        collect($form->getFlatComponents())
+            ->filter(fn ($component): bool => $component instanceof CheckboxList)
+            ->each(function (CheckboxList $component) use ($set, $state): void {
+                $set(
+                    $component->getName(),
+                    $state ? array_keys($component->getOptions()) : [],
+                );
+            });
     }
 }

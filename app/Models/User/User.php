@@ -2,11 +2,14 @@
 
 namespace App\Models\User;
 
+use App\Enums\User\Gender;
 use App\Models\Concerns\HasAuditFields;
 use App\Models\Notifications\Notification;
+use App\Models\Post\Post;
 use App\Models\SupportTicket\SupportTicket;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -25,6 +28,9 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'image',
+        'avatar_id',
+        'birth_date',
+        'gender',
         'phone',
         'email',
         'password',
@@ -49,6 +55,8 @@ class User extends Authenticatable
     }
 
     protected $casts = [
+        'birth_date' => 'date',
+        'gender' => Gender::class,
         'is_active' => 'boolean',
         'created_by' => 'integer',
         'updated_by' => 'integer',
@@ -57,6 +65,14 @@ class User extends Authenticatable
     public function devices(): HasMany
     {
         return $this->hasMany(Device::class);
+    }
+
+    /**
+     * @return BelongsTo<Avatar, $this>
+     */
+    public function avatar(): BelongsTo
+    {
+        return $this->belongsTo(Avatar::class);
     }
 
     /**
@@ -70,5 +86,10 @@ class User extends Authenticatable
     public function supportTickets(): HasMany
     {
         return $this->hasMany(SupportTicket::class);
+    }
+
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
     }
 }

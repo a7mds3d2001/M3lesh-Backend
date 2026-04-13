@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SupportTicket\Schemas;
 
+use App\Models\Post\Post;
 use App\Models\SupportTicket\SupportTicket;
 use App\Models\User\User;
 use Filament\Forms\Components\FileUpload;
@@ -10,6 +11,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Str;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class SupportTicketForm
@@ -72,6 +74,20 @@ class SupportTicketForm
                 ->visibility('public')
                 ->multiple()
                 ->maxFiles(10)
+                ->columnSpanFull(),
+
+            Select::make('post_id')
+                ->label(__('filament.post.linked_post'))
+                ->relationship(
+                    name: 'post',
+                    titleAttribute: 'body',
+                    modifyQueryUsing: fn ($query) => $query->orderByDesc('id'),
+                )
+                ->getOptionLabelFromRecordUsing(fn (Post $record): string => '#'.$record->id.' '.Str::limit($record->body, 50))
+                ->searchable()
+                ->preload()
+                ->nullable()
+                ->visible(fn ($record) => $record !== null)
                 ->columnSpanFull(),
 
         ];

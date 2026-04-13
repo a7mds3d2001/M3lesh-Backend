@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\User;
 
+use App\Enums\User\Gender;
 use App\Filament\Resources\User\Pages\ListUsers;
 use App\Filament\Resources\User\Pages\ViewUser;
 use App\Filament\Resources\User\RelationManagers\DevicesRelationManager;
+use App\Filament\Resources\User\RelationManagers\PostsRelationManager;
 use App\Filament\Resources\User\RelationManagers\SupportTicketsRelationManager;
 use App\Filament\Resources\User\Schemas\UserForm;
 use App\Filament\Resources\User\Tables\UsersTable;
@@ -92,6 +94,14 @@ class UserResource extends Resource
                             ->copyMessage(__('filament.activity.copied'))
                             ->copyMessageDuration(1500)
                             ->placeholder(__('filament.placeholder.empty')),
+                        TextEntry::make('birth_date')
+                            ->label(__('filament.fields.birth_date'))
+                            ->date()
+                            ->placeholder(__('filament.placeholder.empty')),
+                        TextEntry::make('gender')
+                            ->label(__('filament.fields.gender'))
+                            ->formatStateUsing(fn (?Gender $state): ?string => $state?->label())
+                            ->placeholder(__('filament.placeholder.empty')),
                         IconEntry::make('is_active')
                             ->label(__('filament.fields.is_active'))
                             ->boolean(),
@@ -106,6 +116,7 @@ class UserResource extends Resource
     {
         return [
             DevicesRelationManager::class,
+            PostsRelationManager::class,
             SupportTicketsRelationManager::class,
         ];
     }

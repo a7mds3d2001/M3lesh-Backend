@@ -14,6 +14,7 @@ class StoreSupportTicketRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
+            'post_id' => 'nullable|exists:posts,id',
             'user_id' => 'nullable|exists:users,id',
             'visitor_name' => 'nullable|string|max:255',
             'visitor_phone' => 'nullable|string|max:100',

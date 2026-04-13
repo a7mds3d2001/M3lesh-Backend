@@ -162,7 +162,7 @@ class RoleResource extends Resource
         }
 
         return collect($data)
-            ->filter(fn (mixed $permission, string $key): bool => ! in_array($key, $excludedKeys, true))
+            ->filter(fn (mixed $permission, string $key): bool => ! in_array($key, $excludedKeys, true) && is_array($permission))
             ->values()
             ->flatten()
             ->filter(fn (mixed $permission): bool => is_string($permission) && $permission !== '')

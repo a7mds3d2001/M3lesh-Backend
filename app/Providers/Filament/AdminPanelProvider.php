@@ -5,9 +5,12 @@ namespace App\Providers\Filament;
 use App\Filament\Livewire\AdminDatabaseNotifications;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Resources\Admin\AdminResource;
+use App\Filament\Resources\Avatar\AvatarResource;
 use App\Filament\Resources\ContentPage\ContentPageResource;
 use App\Filament\Resources\Notifications\NotificationBroadcastResource;
 use App\Filament\Resources\Notifications\NotificationResource;
+use App\Filament\Resources\Post\PostResource;
+use App\Filament\Resources\PostCommentPreset\PostCommentPresetResource;
 use App\Filament\Resources\Roles\RoleResource as ShieldRoleResource;
 use App\Filament\Resources\SupportTicket\SupportTicketResource;
 use App\Filament\Resources\User\UserResource;
@@ -79,6 +82,11 @@ class AdminPanelProvider extends PanelProvider
                                 ...(NotificationResource::shouldRegisterNavigation() ? NotificationResource::getNavigationItems() : []),
                                 ...(NotificationBroadcastResource::shouldRegisterNavigation() ? NotificationBroadcastResource::getNavigationItems() : []),
                             ]),
+                        NavigationGroup::make(__('filament.navigation.posts_management'))
+                            ->items([
+                                ...(PostResource::shouldRegisterNavigation() ? PostResource::getNavigationItems() : []),
+                                ...(PostCommentPresetResource::shouldRegisterNavigation() ? PostCommentPresetResource::getNavigationItems() : []),
+                            ]),
                         NavigationGroup::make(__('filament.navigation.system_services'))
                             ->items([
                                 ...(SupportTicketResource::shouldRegisterNavigation() ? SupportTicketResource::getNavigationItems() : []),
@@ -87,6 +95,7 @@ class AdminPanelProvider extends PanelProvider
                         NavigationGroup::make(__('filament.navigation.accounts_and_permissions'))
                             ->items([
                                 ...(UserResource::shouldRegisterNavigation() ? UserResource::getNavigationItems() : []),
+                                ...(AvatarResource::shouldRegisterNavigation() ? AvatarResource::getNavigationItems() : []),
                                 ...(AdminResource::shouldRegisterNavigation() ? AdminResource::getNavigationItems() : []),
                                 ...(ShieldRoleResource::shouldRegisterNavigation() ? ShieldRoleResource::getNavigationItems() : []),
                             ]),

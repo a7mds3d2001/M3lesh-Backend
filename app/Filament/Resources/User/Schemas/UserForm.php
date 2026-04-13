@@ -2,7 +2,10 @@
 
 namespace App\Filament\Resources\User\Schemas;
 
+use App\Enums\User\Gender;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
@@ -48,6 +51,17 @@ class UserForm
                     ->maxSize(2048)
                     ->nullable()
                     ->columnSpanFull(),
+                DatePicker::make('birth_date')
+                    ->label(__('filament.fields.birth_date'))
+                    ->maxDate(now())
+                    ->native(false)
+                    ->nullable(),
+                Select::make('gender')
+                    ->label(__('filament.fields.gender'))
+                    ->options(collect(Gender::cases())->mapWithKeys(
+                        fn (Gender $gender): array => [$gender->value => $gender->label()],
+                    ))
+                    ->nullable(),
                 Toggle::make('is_active')
                     ->label(__('filament.fields.is_active'))
                     ->default(true),

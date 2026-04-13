@@ -54,6 +54,7 @@ return [
         'content_and_support' => 'Content & Support',
         'system_services' => 'System Services',
         'notifications_management' => 'Notifications Management',
+        'posts_management' => 'Posts management',
         'jobs_management' => 'Jobs Management',
         'events_management' => 'Events Management',
         'pending_listings' => 'Pending',
@@ -161,6 +162,10 @@ return [
         'app_version' => 'App Version',
         'last_used_at' => 'Last Used',
         'global' => 'Global',
+        'birth_date' => 'Birth date',
+        'gender' => 'Gender',
+        'gender_male' => 'Male',
+        'gender_female' => 'Female',
     ],
 
     'notifications' => [
@@ -291,6 +296,37 @@ return [
         'user_information' => 'User Information',
     ],
 
+    'post' => [
+        'nav' => 'Posts',
+        'singular' => 'Post',
+        'section' => 'Post',
+        'body' => 'Content',
+        'author' => 'Author',
+        'likes_count' => 'Likes',
+        'comments_count' => 'Comments',
+        'likes_tab' => 'Likes',
+        'comments_tab' => 'Comments',
+        'like_singular' => 'Like',
+        'comment_singular' => 'Comment',
+        'liked_by' => 'User',
+        'commented_by' => 'User',
+        'comment_text' => 'Comment',
+        'linked_post' => 'Linked post',
+    ],
+
+    'post_comment_preset' => [
+        'nav' => 'Comments',
+        'singular' => 'Comment preset',
+        'section' => 'Comment preset',
+        'text' => 'Text',
+    ],
+
+    'avatar' => [
+        'nav' => 'Profile avatars',
+        'singular' => 'Avatar',
+        'section' => 'Avatar',
+    ],
+
     // Support Tickets
     'support_ticket' => [
         'nav' => [
@@ -342,6 +378,24 @@ return [
         'actor_admin' => 'Admin',
         'actor_user' => 'User',
         'actions_menu' => 'Actions',
+        'post_report_reason' => 'Report reason',
+        'post_report_details' => 'Reporter details',
+    ],
+
+    // Post report reasons (user API + support tickets)
+    'post_reports' => [
+        'reasons' => [
+            'spam' => 'Spam or advertising',
+            'harassment' => 'Harassment or bullying',
+            'hate_speech' => 'Hate speech',
+            'violence' => 'Violence or threats',
+            'misinformation' => 'Misinformation',
+            'nudity_or_sexual' => 'Nudity or sexual content',
+            'illegal_content' => 'Illegal content',
+            'copyright' => 'Copyright infringement',
+            'impersonation' => 'Impersonation',
+            'self_harm' => 'Self-harm or dangerous acts',
+        ],
     ],
 
     // Placeholders & filters
@@ -480,6 +534,27 @@ return [
         'delete_users' => 'Delete user',
         'restore_users' => 'Restore user',
         'force_delete_users' => 'Permanently delete user',
+
+        // Posts
+        'view_posts' => 'View posts',
+        'create_posts' => 'Create post',
+        'edit_posts' => 'Edit posts',
+        'delete_posts' => 'Delete posts',
+        'restore_posts' => 'Restore posts',
+        'force_delete_posts' => 'Permanently delete posts',
+
+        // Post comment presets
+        'view_post_comment_presets' => 'View comment presets',
+        'create_post_comment_presets' => 'Add comment preset',
+        'edit_post_comment_presets' => 'Edit comment preset',
+        'delete_post_comment_presets' => 'Delete comment preset',
+        'restore_post_comment_presets' => 'Restore comment preset',
+        'force_delete_post_comment_presets' => 'Permanently delete comment preset',
+
+        // Profile avatars
+        'view_avatars' => 'View profile avatars',
+        'create_avatars' => 'Add profile avatar',
+        'delete_avatars' => 'Delete profile avatar',
 
         // Transport Management
         'view_transportation_areas' => 'View transportation areas',
@@ -626,6 +701,7 @@ return [
         'reject' => 'Reject',
         'reject_confirm' => 'Reject this listing? It will not be published.',
         'created_by_user' => 'User',
+        'not_owner' => 'You do not own this directory listing.',
     ],
 
     // Job Listings
