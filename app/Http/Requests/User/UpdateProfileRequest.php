@@ -39,6 +39,13 @@ class UpdateProfileRequest extends FormRequest
                 Rule::unique('users', 'email')->ignore($user->id),
             ],
             'image' => ['sometimes', 'nullable', 'file', 'max:5120', 'mimes:jpeg,jpg,png,gif,webp'],
+            'avatar_id' => [
+                'sometimes',
+                'nullable',
+                Rule::excludeIf(fn () => $this->hasFile('image')),
+                'integer',
+                Rule::exists('avatars', 'id'),
+            ],
             'birth_date' => ['sometimes', 'nullable', 'date', 'before_or_equal:today'],
             'gender' => ['sometimes', 'nullable', Rule::enum(Gender::class)],
         ];

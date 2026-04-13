@@ -321,6 +321,12 @@ return [
         'text' => 'Text',
     ],
 
+    'avatar' => [
+        'nav' => 'Profile avatars',
+        'singular' => 'Avatar',
+        'section' => 'Avatar',
+    ],
+
     // Support Tickets
     'support_ticket' => [
         'nav' => [
@@ -544,6 +550,11 @@ return [
         'delete_post_comment_presets' => 'Delete comment preset',
         'restore_post_comment_presets' => 'Restore comment preset',
         'force_delete_post_comment_presets' => 'Permanently delete comment preset',
+
+        // Profile avatars
+        'view_avatars' => 'View profile avatars',
+        'create_avatars' => 'Add profile avatar',
+        'delete_avatars' => 'Delete profile avatar',
 
         // Transport Management
         'view_transportation_areas' => 'View transportation areas',
