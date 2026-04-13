@@ -30,8 +30,17 @@ class ListAvatars extends ListRecords
                         ]);
                     }
 
+                    $next = (int) Avatar::query()->max('sort_order');
+
                     return collect($paths)
-                        ->map(fn (string $path): Avatar => Avatar::query()->create(['image' => $path]))
+                        ->map(function (string $path) use (&$next): Avatar {
+                            $next++;
+
+                            return Avatar::query()->create([
+                                'image' => $path,
+                                'sort_order' => $next,
+                            ]);
+                        })
                         ->last();
                 }),
         ];

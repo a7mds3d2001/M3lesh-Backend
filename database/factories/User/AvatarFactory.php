@@ -16,6 +16,7 @@ class AvatarFactory extends Factory
     {
         return [
             'image' => 'avatars/'.fake()->uuid().'.png',
+            'sort_order' => (int) (Avatar::query()->max('sort_order') ?? 0) + 1,
         ];
     }
 }
