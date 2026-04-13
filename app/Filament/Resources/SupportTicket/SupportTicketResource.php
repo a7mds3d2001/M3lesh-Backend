@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\SupportTicket;
 
-use App\Enums\Post\PostReportReason;
 use App\Filament\Resources\Post\PostResource as FilamentPostResource;
 use App\Filament\Resources\SupportTicket\Pages\ListSupportTickets;
 use App\Filament\Resources\SupportTicket\Pages\ViewSupportTicket;
@@ -10,6 +9,8 @@ use App\Filament\Resources\SupportTicket\RelationManagers\SupportTicketLogsRelat
 use App\Filament\Resources\SupportTicket\Schemas\SupportTicketForm;
 use App\Filament\Resources\SupportTicket\Tables\SupportTicketsTable;
 use App\Filament\Support\AuditInfolistSection;
+use App\Models\Post\Post as PostModel;
+use App\Models\Post\PostReport;
 use App\Models\SupportTicket\SupportTicket;
 use BackedEnum;
 use Filament\Infolists\Components\RepeatableEntry;
@@ -130,7 +131,10 @@ class SupportTicketResource extends Resource
                                     return '—';
                                 }
 
-                                return '#'.$state.' '.Str::limit($record->post?->body ?? '', 60);
+                                $post = $record->post;
+                                $snippet = ($post instanceof PostModel) ? Str::limit((string) $post->body, 60) : '';
+
+                                return '#'.$state.' '.$snippet;
                             })
                             ->url(fn (SupportTicket $record): ?string => $record->post_id
                                 ? FilamentPostResource::getUrl('view', ['record' => $record->post_id])
@@ -141,15 +145,11 @@ class SupportTicketResource extends Resource
                             ->label(__('filament.support_ticket.post_report_reason'))
                             ->getStateUsing(function (SupportTicket $record): string {
                                 $record->loadMissing('postReport');
-                                if (! $record->postReport) {
+                                $postReport = $record->postReport;
+                                if (! $postReport instanceof PostReport) {
                                     return '—';
                                 }
-                                $reason = $record->postReport->reason;
-                                if (! $reason instanceof PostReportReason) {
-                                    return '—';
-                                }
-
-                                return $reason->labelsBilingual();
+                                return $postReport->reason->labelsBilingual();
                             })
                             ->visible(fn (SupportTicket $record): bool => (bool) $record->post_id),
 
@@ -158,10 +158,19 @@ class SupportTicketResource extends Resource
                             ->getStateUsing(function (SupportTicket $record): ?string {
                                 $record->loadMissing('postReport');
 
-                                return $record->postReport?->details;
+                                $postReport = $record->postReport;
+
+                                return $postReport instanceof PostReport ? $postReport->details : null;
                             })
                             ->placeholder('—')
-                            ->visible(fn (SupportTicket $record): bool => (bool) $record->post_id && (bool) $record->postReport?->details),
+                            ->visible(function (SupportTicket $record): bool {
+                                if (! $record->post_id) {
+                                    return false;
+                                }
+                                $postReport = $record->postReport;
+
+                                return $postReport instanceof PostReport && filled($postReport->details);
+                            }),
 
                         RepeatableEntry::make('attachments')
                             ->label(__('filament.support_ticket.attachments'))

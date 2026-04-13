@@ -16,9 +16,9 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Schema;
 use Illuminate\Validation\Rules\Unique;
-use Livewire\Component as Livewire;
 
 class RoleForm
 {
@@ -68,7 +68,7 @@ class RoleForm
                                     ->label(__('filament-shield::filament-shield.field.select_all.name'))
                                     ->helperText(__('filament-shield::filament-shield.field.select_all.message'))
                                     ->live()
-                                    ->afterStateUpdated(function (Livewire $livewire, Set $set, bool $state): void {
+                                    ->afterStateUpdated(function (HasSchemas $livewire, Set $set, bool $state): void {
                                         static::syncShieldCheckboxListsFromSelectAll($livewire, $set, $state);
                                     })
                                     ->dehydrated(false),
@@ -84,9 +84,14 @@ class RoleForm
             ]);
     }
 
-    protected static function syncShieldCheckboxListsFromSelectAll(Livewire $livewire, Set $set, bool $state): void
+    protected static function syncShieldCheckboxListsFromSelectAll(HasSchemas $livewire, Set $set, bool $state): void
     {
-        collect($livewire->form->getFlatComponents())
+        $form = $livewire->getSchema('form');
+        if ($form === null) {
+            return;
+        }
+
+        collect($form->getFlatComponents())
             ->filter(fn ($component): bool => $component instanceof CheckboxList)
             ->each(function (CheckboxList $component) use ($set, $state): void {
                 $set(

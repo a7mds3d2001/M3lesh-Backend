@@ -19,6 +19,7 @@ use App\Models\Post\PostLike;
 use App\Models\User\User;
 use App\Services\Notifications\NotificationService;
 use App\Services\Post\PostReportService;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -53,7 +54,7 @@ class PostController extends Controller
         }
 
         $paginator = $query->paginate($this->getPerPage($request));
-        $this->attachRecentCommentsToPosts($paginator->getCollection(), 2);
+        $this->attachRecentCommentsToPosts($this->postsFromPaginatorItems($paginator->getCollection()), 2);
         $paginator->through(fn (Post $post) => PostResource::make($post)->resolve($request));
 
         return response()->json($paginator);
@@ -72,7 +73,7 @@ class PostController extends Controller
         }
 
         $paginator = $query->paginate($this->getPerPage($request));
-        $this->attachRecentCommentsToPosts($paginator->getCollection(), 2);
+        $this->attachRecentCommentsToPosts($this->postsFromPaginatorItems($paginator->getCollection()), 2);
         $paginator->through(fn (Post $post) => PostResource::make($post)->resolve($request));
 
         return response()->json($paginator);
@@ -257,6 +258,21 @@ class PostController extends Controller
         $ticket = $result['ticket']->load(['user', 'post', 'postReport', 'logs.actor', 'creator', 'updater']);
 
         return SupportTicketResource::make($ticket)->response($request)->setStatusCode(201);
+    }
+
+    /**
+     * @param  Collection<int, Model>  $items
+     * @return Collection<int, Post>
+     */
+    private function postsFromPaginatorItems(Collection $items): Collection
+    {
+        return $items->map(function (Model $model): Post {
+            if (! $model instanceof Post) {
+                throw new \UnexpectedValueException('Paginator items must be post models.');
+            }
+
+            return $model;
+        });
     }
 
     /**
