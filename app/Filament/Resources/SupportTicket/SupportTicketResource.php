@@ -149,6 +149,7 @@ class SupportTicketResource extends Resource
                                 if (! $postReport instanceof PostReport) {
                                     return '—';
                                 }
+
                                 return $postReport->reason->labelsBilingual();
                             })
                             ->visible(fn (SupportTicket $record): bool => (bool) $record->post_id),
