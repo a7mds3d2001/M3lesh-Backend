@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Livewire\AdminDatabaseNotifications;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Resources\Admin\AdminResource;
+use App\Filament\Resources\Avatar\AvatarResource;
 use App\Filament\Resources\ContentPage\ContentPageResource;
 use App\Filament\Resources\Notifications\NotificationBroadcastResource;
 use App\Filament\Resources\Notifications\NotificationResource;
@@ -94,6 +95,7 @@ class AdminPanelProvider extends PanelProvider
                         NavigationGroup::make(__('filament.navigation.accounts_and_permissions'))
                             ->items([
                                 ...(UserResource::shouldRegisterNavigation() ? UserResource::getNavigationItems() : []),
+                                ...(AvatarResource::shouldRegisterNavigation() ? AvatarResource::getNavigationItems() : []),
                                 ...(AdminResource::shouldRegisterNavigation() ? AdminResource::getNavigationItems() : []),
                                 ...(ShieldRoleResource::shouldRegisterNavigation() ? ShieldRoleResource::getNavigationItems() : []),
                             ]),

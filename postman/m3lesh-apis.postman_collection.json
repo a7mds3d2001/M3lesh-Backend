@@ -1,7 +1,7 @@
 {
     "info": {
         "name": "M3lesh APIs",
-        "description": "Admin: `/api/admin` with Bearer token — includes **posts** and **post-comment-presets** APIs plus Filament (`/admin`).\\nUser: `/api/user` — auth, **posts** (Browse / My posts / Actions), **comment-presets** (read-only list). **Delete my comment:** `DELETE /api/user/posts/{post}/comments/{comment}` (Bearer `user_token`, comment author only).\\nVariables: base_url, admin_token, user_token, lang, post_id, comment_preset_id, comment_id, like_id.",
+        "description": "Admin: `/api/admin` with Bearer token — includes **posts** and **post-comment-presets** APIs plus Filament (`/admin`). Catalog **profile avatars** are managed in Filament (not under this admin REST collection).\\nUser: `/api/user` — auth, **profile** (`PUT /me` multipart or JSON; **avatar_id** for catalog copy), **`GET /avatars`** (catalog list, Bearer), **posts**, **comment-presets**. **Delete my comment:** `DELETE /api/user/posts/{post}/comments/{comment}`.\\nVariables: base_url, admin_token, user_token, lang, post_id, comment_preset_id, comment_id, like_id, avatar_id.",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "variable": [
@@ -35,6 +35,10 @@
         },
         {
             "key": "like_id",
+            "value": "1"
+        },
+        {
+            "key": "avatar_id",
             "value": "1"
         }
     ],
@@ -1777,7 +1781,7 @@
         },
         {
             "name": "User",
-            "description": "User APIs under /api/user: auth, profile, devices, notifications, **posts** (Browse is public; My posts & Actions need token), **comment presets**, content pages, support tickets.",
+            "description": "User APIs under /api/user: auth, profile (**GET /avatars** for catalog avatars; **PUT /me** with optional **image** file and/or **avatar_id**), devices, notifications, **posts**, **comment presets**, content pages, support tickets.",
             "item": [
                 {
                     "name": "Auth",
@@ -1887,7 +1891,43 @@
                                         "value": "Bearer {{user_token}}"
                                     }
                                 ],
-                                "url": "{{base_url}}/api/user/me"
+                                "url": "{{base_url}}/api/user/me",
+                                "description": "Returns **data** including **image** (URL), **avatar_id** (nullable when profile image came from device upload), and other user fields."
+                            }
+                        },
+                        {
+                            "name": "List catalog avatars",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "if (pm.response.code === 200) {",
+                                            "    const j = pm.response.json();",
+                                            "    if (Array.isArray(j.data) && j.data.length && j.data[0].id != null) {",
+                                            "        pm.collectionVariables.set('avatar_id', String(j.data[0].id));",
+                                            "        pm.environment.set('avatar_id', String(j.data[0].id));",
+                                            "    }",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{user_token}}"
+                                    }
+                                ],
+                                "url": "{{base_url}}/api/user/avatars",
+                                "description": "Bearer required. Response **data[]**: **id**, **image** (full URL), **created_at**. Test script stores first **id** in collection variable **avatar_id** for **Update profile**."
                             }
                         },
                         {
@@ -1935,15 +1975,48 @@
                                             "description": "Optional. male or female."
                                         },
                                         {
+                                            "key": "avatar_id",
+                                            "value": "{{avatar_id}}",
+                                            "type": "text",
+                                            "description": "Optional. Catalog preset id from **List catalog avatars**. If **image** file is attached, **avatar_id** is ignored.",
+                                            "disabled": true
+                                        },
+                                        {
                                             "key": "image",
                                             "type": "file",
                                             "src": [],
-                                            "description": "Optional. jpeg, jpg, png, gif, webp. Max 5MB."
+                                            "description": "Optional. jpeg, jpg, png, gif, webp. Max 5MB. Clears **avatar_id** when sent."
                                         }
                                     ]
                                 },
                                 "url": "{{base_url}}/api/user/me",
-                                "description": "Multipart **form-data**. All text fields optional per request rules; **birth_date** (Y-m-d), **gender** (`male`|`female`), **image** optional file."
+                                "description": "Multipart **form-data**. Optional **avatar_id** (enable the field; use **List catalog avatars** first). Optional **image** file — when present, **avatar_id** is ignored and **avatar_id** on the user is cleared. Response **data** includes **image** and **avatar_id**."
+                            }
+                        },
+                        {
+                            "name": "Update Profile (JSON — catalog avatar)",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Accept-Language",
+                                        "value": "{{lang}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{user_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"avatar_id\": {{avatar_id}}\n}"
+                                },
+                                "url": "{{base_url}}/api/user/me",
+                                "description": "JSON body: set **avatar_id** only (or combine with **name**, **email**, **phone**, **birth_date**, **gender**). Copies catalog file to user storage; response **data.image** is the new profile URL. Do not send **image** as base64 here — use **Update Profile** multipart for uploads."
                             }
                         },
                         {

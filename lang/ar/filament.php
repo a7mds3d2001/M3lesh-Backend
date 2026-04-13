@@ -321,6 +321,12 @@ return [
         'text' => 'النص',
     ],
 
+    'avatar' => [
+        'nav' => 'أفاتارات الملف الشخصي',
+        'singular' => 'أفاتار',
+        'section' => 'أفاتار',
+    ],
+
     // Support Tickets
     'support_ticket' => [
         'nav' => [
@@ -544,6 +550,11 @@ return [
         'delete_post_comment_presets' => 'حذف تعليق جاهز',
         'restore_post_comment_presets' => 'استعادة تعليق جاهز',
         'force_delete_post_comment_presets' => 'حذف تعليق جاهز نهائياً',
+
+        // Profile avatars
+        'view_avatars' => 'عرض أفاتارات الملف الشخصي',
+        'create_avatars' => 'إضافة أفاتار',
+        'delete_avatars' => 'حذف أفاتار',
 
         // Transportation Management (وسائل النقل)
         'view_transportation_areas' => 'عرض مناطق وسائل النقل',

@@ -9,7 +9,9 @@ use App\Http\Requests\User\LoginUserRequest;
 use App\Http\Requests\User\RegisterUserRequest;
 use App\Http\Requests\User\UpdateProfileRequest;
 use App\Http\Resources\User\UserResource;
+use App\Models\User\Avatar;
 use App\Models\User\User;
+use App\Services\UserProfileAvatarService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -98,12 +100,28 @@ class AuthController extends Controller
         }
 
         $validated = $request->validated();
+        $selectedAvatarId = $validated['avatar_id'] ?? null;
+        unset($validated['avatar_id']);
 
         // Handle image upload separately (multipart/form-data)
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('users', 'public');
             $user->image = $path;
+            $user->avatar_id = null;
             unset($validated['image']);
+        } elseif ($selectedAvatarId !== null) {
+            $avatar = Avatar::query()->findOrFail($selectedAvatarId);
+
+            try {
+                $path = app(UserProfileAvatarService::class)->copyCatalogAvatarToUserStorage($user, $avatar);
+            } catch (\RuntimeException) {
+                return response()->json([
+                    'message' => 'Could not apply the selected avatar.',
+                    'errors' => ['avatar_id' => ['The selected avatar file is unavailable.']],
+                ], 422);
+            }
+            $user->image = $path;
+            $user->avatar_id = $avatar->id;
         }
 
         $user->fill($validated);

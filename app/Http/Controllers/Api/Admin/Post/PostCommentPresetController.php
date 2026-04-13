@@ -43,7 +43,7 @@ class PostCommentPresetController extends Controller
 
         $query = $this->applySort($query, $request, self::SORT_ALLOWED);
         if (! $request->has('sort_by')) {
-            $query->ordered();
+            $query->orderByDesc('id');
         }
 
         $paginator = $query->paginate($this->getPerPage($request));
