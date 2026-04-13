@@ -2,9 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Post\Post;
+use App\Models\Post\PostCommentPreset;
 use App\Models\User\Admin;
 use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Route::bind('admin_post', fn (string $value) => Post::withTrashed()->whereKey($value)->firstOrFail());
+        Route::bind('comment_preset', fn (string $value) => PostCommentPreset::withTrashed()->whereKey($value)->firstOrFail());
+
         // Super Admin (admin_type = super_admin) bypasses all permission checks everywhere:
         // Filament (canViewAny, canCreate, canEdit, …) and API (authorize, $user->can(…)).
         Gate::before(function ($user, $ability) {

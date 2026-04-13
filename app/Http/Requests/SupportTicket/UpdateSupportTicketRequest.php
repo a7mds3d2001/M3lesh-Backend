@@ -14,6 +14,7 @@ class UpdateSupportTicketRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'post_id' => 'nullable|exists:posts,id',
             'message' => 'sometimes|string',
             'priority' => 'sometimes|in:low,normal,high',
             'status' => 'sometimes|in:open,in_progress,closed',

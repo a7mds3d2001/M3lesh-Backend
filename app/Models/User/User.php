@@ -5,6 +5,7 @@ namespace App\Models\User;
 use App\Enums\User\Gender;
 use App\Models\Concerns\HasAuditFields;
 use App\Models\Notifications\Notification;
+use App\Models\Post\Post;
 use App\Models\SupportTicket\SupportTicket;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -75,5 +76,10 @@ class User extends Authenticatable
     public function supportTickets(): HasMany
     {
         return $this->hasMany(SupportTicket::class);
+    }
+
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
     }
 }

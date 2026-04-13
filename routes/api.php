@@ -7,12 +7,16 @@ use App\Http\Controllers\Api\Admin\Auth\RoleController as AdminRoleController;
 use App\Http\Controllers\Api\Admin\ContentPage\ContentPageController as AdminContentPageController;
 use App\Http\Controllers\Api\Admin\Notifications\NotificationBroadcastController as AdminNotificationBroadcastController;
 use App\Http\Controllers\Api\Admin\Notifications\NotificationController as AdminNotificationController;
+use App\Http\Controllers\Api\Admin\Post\PostCommentPresetController as AdminPostCommentPresetController;
+use App\Http\Controllers\Api\Admin\Post\PostController as AdminPostController;
 use App\Http\Controllers\Api\Admin\SupportTicket\SupportTicketController as AdminSupportTicketController;
 use App\Http\Controllers\Api\Admin\User\UserController as AdminUserController;
 use App\Http\Controllers\Api\User\Auth\AuthController as UserAuthController;
 use App\Http\Controllers\Api\User\Auth\DeviceController as UserDeviceController;
 use App\Http\Controllers\Api\User\ContentPage\ContentPageController as UserContentPageController;
 use App\Http\Controllers\Api\User\Notifications\NotificationController as UserNotificationController;
+use App\Http\Controllers\Api\User\Post\PostCommentPresetController as UserPostCommentPresetController;
+use App\Http\Controllers\Api\User\Post\PostController as UserPostController;
 use App\Http\Controllers\Api\User\SupportTicket\SupportTicketController as UserSupportTicketController;
 use Illuminate\Support\Facades\Route;
 
@@ -66,12 +70,40 @@ Route::prefix('admin')->group(function (): void {
             Route::put('{content_page}', [AdminContentPageController::class, 'update']);
             Route::delete('{content_page}', [AdminContentPageController::class, 'destroy']);
         });
+
+        Route::get('posts', [AdminPostController::class, 'index']);
+        Route::post('posts', [AdminPostController::class, 'store']);
+        Route::post('posts/{admin_post}/restore', [AdminPostController::class, 'restore']);
+        Route::delete('posts/{admin_post}/force', [AdminPostController::class, 'forceDestroy']);
+        Route::get('posts/{admin_post}/comments', [AdminPostController::class, 'commentsIndex']);
+        Route::delete('posts/{admin_post}/comments/{comment}', [AdminPostController::class, 'destroyComment']);
+        Route::get('posts/{admin_post}/likes', [AdminPostController::class, 'likesIndex']);
+        Route::delete('posts/{admin_post}/likes/{like}', [AdminPostController::class, 'destroyLike']);
+        Route::get('posts/{admin_post}', [AdminPostController::class, 'show']);
+        Route::put('posts/{admin_post}', [AdminPostController::class, 'update']);
+        Route::delete('posts/{admin_post}', [AdminPostController::class, 'destroy']);
+
+        Route::prefix('post-comment-presets')->group(function (): void {
+            Route::get('/', [AdminPostCommentPresetController::class, 'index']);
+            Route::post('/', [AdminPostCommentPresetController::class, 'store']);
+            Route::post('{comment_preset}/restore', [AdminPostCommentPresetController::class, 'restore']);
+            Route::delete('{comment_preset}/force', [AdminPostCommentPresetController::class, 'forceDestroy']);
+            Route::get('{comment_preset}', [AdminPostCommentPresetController::class, 'show']);
+            Route::put('{comment_preset}', [AdminPostCommentPresetController::class, 'update']);
+            Route::delete('{comment_preset}', [AdminPostCommentPresetController::class, 'destroy']);
+        });
     });
 });
 
 Route::prefix('user')->group(function (): void {
     Route::post('register', [UserAuthController::class, 'register']);
     Route::post('login', [UserAuthController::class, 'login']);
+
+    Route::middleware('optional.sanctum')->group(function (): void {
+        Route::get('posts', [UserPostController::class, 'index']);
+        Route::get('posts/{post}', [UserPostController::class, 'show'])->whereNumber('post');
+        Route::get('posts/{post}/comments', [UserPostController::class, 'commentsIndex'])->whereNumber('post');
+    });
 
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('me', [UserAuthController::class, 'me']);
@@ -90,6 +122,16 @@ Route::prefix('user')->group(function (): void {
         Route::get('support-tickets', [UserSupportTicketController::class, 'index']);
         Route::get('support-tickets/{support_ticket}', [UserSupportTicketController::class, 'show']);
         Route::post('support-tickets/{support_ticket}/logs', [UserSupportTicketController::class, 'storeLog']);
+
+        Route::get('comment-presets', [UserPostCommentPresetController::class, 'index']);
+        Route::get('posts/mine', [UserPostController::class, 'mine']);
+        Route::post('posts', [UserPostController::class, 'store']);
+        Route::put('posts/{post}', [UserPostController::class, 'update']);
+        Route::delete('posts/{post}', [UserPostController::class, 'destroy']);
+        Route::post('posts/{post}/like', [UserPostController::class, 'toggleLike']);
+        Route::post('posts/{post}/comments', [UserPostController::class, 'commentsStore']);
+        Route::delete('posts/{post}/comments/{comment}', [UserPostController::class, 'commentsDestroy'])->whereNumber('post')->whereNumber('comment');
+        Route::post('posts/{post}/report', [UserPostController::class, 'report']);
     });
 
     Route::post('support-tickets', [UserSupportTicketController::class, 'store'])->middleware('optional.sanctum');

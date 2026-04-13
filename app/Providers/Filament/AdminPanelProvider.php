@@ -8,6 +8,8 @@ use App\Filament\Resources\Admin\AdminResource;
 use App\Filament\Resources\ContentPage\ContentPageResource;
 use App\Filament\Resources\Notifications\NotificationBroadcastResource;
 use App\Filament\Resources\Notifications\NotificationResource;
+use App\Filament\Resources\Post\PostResource;
+use App\Filament\Resources\PostCommentPreset\PostCommentPresetResource;
 use App\Filament\Resources\Roles\RoleResource as ShieldRoleResource;
 use App\Filament\Resources\SupportTicket\SupportTicketResource;
 use App\Filament\Resources\User\UserResource;
@@ -78,6 +80,11 @@ class AdminPanelProvider extends PanelProvider
                             ->items([
                                 ...(NotificationResource::shouldRegisterNavigation() ? NotificationResource::getNavigationItems() : []),
                                 ...(NotificationBroadcastResource::shouldRegisterNavigation() ? NotificationBroadcastResource::getNavigationItems() : []),
+                            ]),
+                        NavigationGroup::make(__('filament.navigation.posts_management'))
+                            ->items([
+                                ...(PostResource::shouldRegisterNavigation() ? PostResource::getNavigationItems() : []),
+                                ...(PostCommentPresetResource::shouldRegisterNavigation() ? PostCommentPresetResource::getNavigationItems() : []),
                             ]),
                         NavigationGroup::make(__('filament.navigation.system_services'))
                             ->items([

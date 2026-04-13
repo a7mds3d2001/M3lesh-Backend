@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\SupportTicket;
 
+use App\Enums\Post\PostReportReason;
+use App\Filament\Resources\Post\PostResource as FilamentPostResource;
 use App\Filament\Resources\SupportTicket\Pages\ListSupportTickets;
 use App\Filament\Resources\SupportTicket\Pages\ViewSupportTicket;
 use App\Filament\Resources\SupportTicket\RelationManagers\SupportTicketLogsRelationManager;
@@ -19,6 +21,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 
 class SupportTicketResource extends Resource
 {
@@ -119,6 +122,46 @@ class SupportTicketResource extends Resource
                         TextEntry::make('message')
                             ->label(__('filament.support_ticket.message'))
                             ->columnSpanFull(),
+
+                        TextEntry::make('post_id')
+                            ->label(__('filament.post.linked_post'))
+                            ->formatStateUsing(function (?int $state, SupportTicket $record): string {
+                                if (! $state) {
+                                    return '—';
+                                }
+
+                                return '#'.$state.' '.Str::limit($record->post?->body ?? '', 60);
+                            })
+                            ->url(fn (SupportTicket $record): ?string => $record->post_id
+                                ? FilamentPostResource::getUrl('view', ['record' => $record->post_id])
+                                : null)
+                            ->visible(fn (SupportTicket $record): bool => (bool) $record->post_id),
+
+                        TextEntry::make('post_report_reason_display')
+                            ->label(__('filament.support_ticket.post_report_reason'))
+                            ->getStateUsing(function (SupportTicket $record): string {
+                                $record->loadMissing('postReport');
+                                if (! $record->postReport) {
+                                    return '—';
+                                }
+                                $reason = $record->postReport->reason;
+                                if (! $reason instanceof PostReportReason) {
+                                    return '—';
+                                }
+
+                                return $reason->labelsBilingual();
+                            })
+                            ->visible(fn (SupportTicket $record): bool => (bool) $record->post_id),
+
+                        TextEntry::make('post_report_details_display')
+                            ->label(__('filament.support_ticket.post_report_details'))
+                            ->getStateUsing(function (SupportTicket $record): ?string {
+                                $record->loadMissing('postReport');
+
+                                return $record->postReport?->details;
+                            })
+                            ->placeholder('—')
+                            ->visible(fn (SupportTicket $record): bool => (bool) $record->post_id && (bool) $record->postReport?->details),
 
                         RepeatableEntry::make('attachments')
                             ->label(__('filament.support_ticket.attachments'))

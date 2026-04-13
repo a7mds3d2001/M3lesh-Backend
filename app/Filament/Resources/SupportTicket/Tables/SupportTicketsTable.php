@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SupportTicket\Tables;
 
+use App\Filament\Resources\Post\PostResource as FilamentPostResource;
 use App\Models\SupportTicket\SupportTicket;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -19,6 +20,7 @@ class SupportTicketsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->with('post'))
             ->columns([
                 TextColumn::make('ticket_number')
                     ->label(__('filament.support_ticket.ticket_number'))
@@ -61,6 +63,14 @@ class SupportTicketsTable
                         default => 'primary',
                     })
                     ->sortable(),
+
+                TextColumn::make('post_id')
+                    ->label(__('filament.post.linked_post'))
+                    ->sortable()
+                    ->placeholder('—')
+                    ->url(fn ($record) => $record->post_id
+                        ? FilamentPostResource::getUrl('view', ['record' => $record->post_id])
+                        : null),
             ])
             ->recordActions([
                 ViewAction::make()->iconButton()->color('gray'),
