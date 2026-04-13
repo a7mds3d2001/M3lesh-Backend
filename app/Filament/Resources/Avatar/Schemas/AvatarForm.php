@@ -11,10 +11,14 @@ class AvatarForm
     {
         return $schema
             ->components([
-                FileUpload::make('image')
+                FileUpload::make('images')
                     ->label(__('filament.fields.image'))
+                    ->helperText(__('filament.avatar.multi_upload_hint'))
                     ->image()
-                    ->required()
+                    ->multiple()
+                    ->minFiles(1)
+                    ->reorderable()
+                    ->appendFiles()
                     ->disk('public')
                     ->directory('avatars')
                     ->visibility('public')

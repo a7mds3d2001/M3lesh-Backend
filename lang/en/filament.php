@@ -325,6 +325,7 @@ return [
         'nav' => 'Profile avatars',
         'singular' => 'Avatar',
         'section' => 'Avatar',
+        'multi_upload_hint' => 'Select one or more images at once. Each file is saved as a separate avatar.',
     ],
 
     // Support Tickets
