@@ -12,6 +12,7 @@ use App\Http\Resources\Post\PostCommentResource;
 use App\Http\Resources\Post\PostResource;
 use App\Http\Resources\SupportTicket\SupportTicketResource;
 use App\Http\Traits\ApiPaginationFilters;
+use App\Http\Traits\InteractsWithPostRecentComments;
 use App\Models\Post\Post;
 use App\Models\Post\PostComment;
 use App\Models\Post\PostCommentPreset;
@@ -19,16 +20,15 @@ use App\Models\Post\PostLike;
 use App\Models\User\User;
 use App\Services\Notifications\NotificationService;
 use App\Services\Post\PostReportService;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
     use ApiPaginationFilters;
+    use InteractsWithPostRecentComments;
 
     private const SORT_ALLOWED = ['id', 'created_at', 'updated_at'];
 
@@ -258,52 +258,5 @@ class PostController extends Controller
         $ticket = $result['ticket']->load(['user', 'post', 'postReport', 'logs.actor', 'creator', 'updater']);
 
         return SupportTicketResource::make($ticket)->response($request)->setStatusCode(201);
-    }
-
-    /**
-     * @param  Collection<int, Model>  $items
-     * @return Collection<int, Post>
-     */
-    private function postsFromPaginatorItems(Collection $items): Collection
-    {
-        return $items->map(function (Model $model): Post {
-            if (! $model instanceof Post) {
-                throw new \UnexpectedValueException('Paginator items must be post models.');
-            }
-
-            return $model;
-        });
-    }
-
-    /**
-     * @param  Collection<int, Post>  $posts
-     */
-    private function attachRecentCommentsToPosts(Collection $posts, int $limit): void
-    {
-        if ($posts->isEmpty()) {
-            return;
-        }
-
-        $postIds = $posts->pluck('id')->all();
-        $grouped = PostComment::query()
-            ->with('user')
-            ->whereIn('post_id', $postIds)
-            ->orderByDesc('created_at')
-            ->get()
-            ->groupBy('post_id');
-
-        foreach ($posts as $post) {
-            $recent = $grouped->get($post->id, collect())->take($limit)->values();
-            $post->setRelation('recentComments', $recent);
-        }
-    }
-
-    private function loadRecentCommentsForPost(Post $post, int $limit): void
-    {
-        $recent = $post->comments()
-            ->with('user')
-            ->limit($limit)
-            ->get();
-        $post->setRelation('recentComments', $recent);
     }
 }
