@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\Admin\SupportTicket\SupportTicketController as Admi
 use App\Http\Controllers\Api\Admin\User\UserController as AdminUserController;
 use App\Http\Controllers\Api\User\Auth\AuthController as UserAuthController;
 use App\Http\Controllers\Api\User\Auth\DeviceController as UserDeviceController;
+use App\Http\Controllers\Api\User\Avatar\AvatarController as UserAvatarController;
 use App\Http\Controllers\Api\User\ContentPage\ContentPageController as UserContentPageController;
 use App\Http\Controllers\Api\User\Notifications\NotificationController as UserNotificationController;
 use App\Http\Controllers\Api\User\Post\PostCommentPresetController as UserPostCommentPresetController;
@@ -107,6 +108,7 @@ Route::prefix('user')->group(function (): void {
 
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('me', [UserAuthController::class, 'me']);
+        Route::get('avatars', [UserAvatarController::class, 'index']);
         Route::put('me', [UserAuthController::class, 'update']);
         Route::delete('me', [UserAuthController::class, 'destroy']);
         Route::post('change-password', [UserAuthController::class, 'changePassword']);

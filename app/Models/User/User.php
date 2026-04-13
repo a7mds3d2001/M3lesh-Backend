@@ -9,6 +9,7 @@ use App\Models\Post\Post;
 use App\Models\SupportTicket\SupportTicket;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -27,6 +28,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'image',
+        'avatar_id',
         'birth_date',
         'gender',
         'phone',
@@ -63,6 +65,14 @@ class User extends Authenticatable
     public function devices(): HasMany
     {
         return $this->hasMany(Device::class);
+    }
+
+    /**
+     * @return BelongsTo<Avatar, $this>
+     */
+    public function avatar(): BelongsTo
+    {
+        return $this->belongsTo(Avatar::class);
     }
 
     /**

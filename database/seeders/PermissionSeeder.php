@@ -62,6 +62,11 @@ class PermissionSeeder extends Seeder
         ['key' => 'restore_post_comment_presets', 'name_ar' => 'استعادة تعليق جاهز', 'name_en' => 'Restore comment preset'],
         ['key' => 'force_delete_post_comment_presets', 'name_ar' => 'حذف تعليق جاهز نهائياً', 'name_en' => 'Permanently delete comment preset'],
 
+        // ——— Profile avatars ———
+        ['key' => 'view_avatars', 'name_ar' => 'عرض أفاتارات الملف الشخصي', 'name_en' => 'View profile avatars'],
+        ['key' => 'create_avatars', 'name_ar' => 'إضافة أفاتار', 'name_en' => 'Add profile avatar'],
+        ['key' => 'delete_avatars', 'name_ar' => 'حذف أفاتار', 'name_en' => 'Delete profile avatar'],
+
         // ——— Support Tickets ———
         ['key' => 'view_support_tickets', 'name_ar' => 'عرض تذاكر الدعم', 'name_en' => 'View support tickets'],
         ['key' => 'create_support_tickets', 'name_ar' => 'إنشاء تذكرة دعم', 'name_en' => 'Create support ticket'],
