@@ -1,7 +1,7 @@
 {
     "info": {
         "name": "M3lesh APIs",
-        "description": "Admin: `/api/admin` with Bearer token — includes **posts** and **post-comment-presets** APIs plus Filament (`/admin`). Catalog **profile avatars** are managed in Filament (not under this admin REST collection).\\nUser: `/api/user` — auth, **profile** (`PUT /me` multipart or JSON; **avatar_id** for catalog copy), **`GET /avatars`** (catalog list, Bearer), **posts**, **comment-presets**. **Delete my comment:** `DELETE /api/user/posts/{post}/comments/{comment}`.\\nVariables: base_url, admin_token, user_token, lang, post_id, comment_preset_id, comment_id, like_id, avatar_id.",
+        "description": "Admin: `/api/admin` with Bearer token — includes **posts** and **post-comment-presets** APIs plus Filament (`/admin`). Catalog **profile avatars** are managed in Filament (not under this admin REST collection).\\nUser: `/api/user` — auth, **profile** (`PUT /me` multipart or JSON; **avatar_id** for catalog copy), **`GET /avatars`** (catalog list, Bearer), **public user profile** `GET /users/{user}` (**user** + paginated **posts**; no email/phone), **posts**, **comment-presets**. **Delete my comment:** `DELETE /api/user/posts/{post}/comments/{comment}`.\\nVariables: base_url, admin_token, user_token, lang, post_id, comment_preset_id, comment_id, like_id, avatar_id, profile_user_id.",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "variable": [
@@ -39,6 +39,10 @@
         },
         {
             "key": "avatar_id",
+            "value": "1"
+        },
+        {
+            "key": "profile_user_id",
             "value": "1"
         }
     ],
@@ -1781,7 +1785,7 @@
         },
         {
             "name": "User",
-            "description": "User APIs under /api/user: auth, profile (**GET /avatars** for catalog avatars; **PUT /me** with optional **image** file and/or **avatar_id**), devices, notifications, **posts**, **comment presets**, content pages, support tickets.",
+            "description": "User APIs under /api/user: auth, profile (**GET /avatars** for catalog avatars; **PUT /me** with optional **image** file and/or **avatar_id**), **GET /users/{user}** (public profile + posts), devices, notifications, **posts**, **comment presets**, content pages, support tickets.",
             "item": [
                 {
                     "name": "Auth",
@@ -2249,12 +2253,58 @@
                 },
                 {
                     "name": "Posts",
-                    "description": "**Browse** — public feed, post details, comments (optional token for **liked_by_me**). **My posts** — auth. **Actions** — auth. **Create** saves `post_id` on 201.",
+                    "description": "**Browse** — public feed, **user profile** (`GET /users/{user}`: **user** + **posts**), post details, comments (optional token for **liked_by_me**). **My posts** — auth. **Actions** — auth. **Create** saves `post_id` on 201.",
                     "item": [
                         {
                             "name": "Browse",
                             "description": "**Public** — no `Authorization` required. Optional Bearer `{{user_token}}` to populate **liked_by_me**. Query: `per_page`, `page`, `sort_by`, `sort_order`.",
                             "item": [
+                                {
+                                    "name": "User profile + posts",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [
+                                            {
+                                                "key": "Accept-Language",
+                                                "value": "{{lang}}"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{base_url}}/api/user/users/{{profile_user_id}}?per_page=15&page=1&sort_by=&sort_order=desc",
+                                            "host": [
+                                                "{{base_url}}"
+                                            ],
+                                            "path": [
+                                                "api",
+                                                "user",
+                                                "users",
+                                                "{{profile_user_id}}"
+                                            ],
+                                            "query": [
+                                                {
+                                                    "key": "per_page",
+                                                    "value": "15"
+                                                },
+                                                {
+                                                    "key": "page",
+                                                    "value": "1"
+                                                },
+                                                {
+                                                    "key": "sort_by",
+                                                    "value": "",
+                                                    "description": "id | created_at | updated_at",
+                                                    "disabled": true
+                                                },
+                                                {
+                                                    "key": "sort_order",
+                                                    "value": "desc",
+                                                    "description": "asc | desc"
+                                                }
+                                            ]
+                                        },
+                                        "description": "**Public** — returns **user** (no email/phone) and paginated **posts** (active feed only). Optional Bearer for **liked_by_me** on each post. Inactive or soft-deleted users: **404**."
+                                    }
+                                },
                                 {
                                     "name": "List",
                                     "request": {

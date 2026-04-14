@@ -269,4 +269,47 @@ class PostApiTest extends TestCase
         $this->withToken($this->otherToken)->deleteJson("/api/user/posts/{$postA->id}/comments/{$commentOnB->id}")
             ->assertNotFound();
     }
+
+    public function test_user_profile_lists_public_user_and_active_posts(): void
+    {
+        Post::factory()->create(['user_id' => $this->author->id, 'body' => 'Visible', 'is_active' => true]);
+        Post::factory()->create(['user_id' => $this->author->id, 'body' => 'Hidden', 'is_active' => false]);
+
+        $data = $this->getJson("/api/user/users/{$this->author->id}")
+            ->assertOk()
+            ->json();
+
+        $this->assertSame($this->author->id, $data['user']['id']);
+        $this->assertSame($this->author->name, $data['user']['name']);
+        $this->assertArrayNotHasKey('email', $data['user']);
+        $this->assertArrayNotHasKey('phone', $data['user']);
+        $this->assertCount(1, $data['posts']['data']);
+        $this->assertSame('Visible', $data['posts']['data'][0]['body']);
+    }
+
+    public function test_guest_can_view_user_profile_without_token(): void
+    {
+        Post::factory()->create(['user_id' => $this->author->id, 'is_active' => true]);
+
+        $this->getJson("/api/user/users/{$this->author->id}")
+            ->assertOk()
+            ->assertJsonPath('posts.data.0.liked_by_me', false);
+    }
+
+    public function test_inactive_user_profile_returns_404(): void
+    {
+        $this->author->update(['is_active' => false]);
+
+        $this->getJson("/api/user/users/{$this->author->id}")
+            ->assertNotFound();
+    }
+
+    public function test_soft_deleted_user_profile_returns_404(): void
+    {
+        $userId = $this->author->id;
+        $this->author->delete();
+
+        $this->getJson("/api/user/users/{$userId}")
+            ->assertNotFound();
+    }
 }

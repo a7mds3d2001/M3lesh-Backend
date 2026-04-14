@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\User\Notifications\NotificationController as UserNo
 use App\Http\Controllers\Api\User\Post\PostCommentPresetController as UserPostCommentPresetController;
 use App\Http\Controllers\Api\User\Post\PostController as UserPostController;
 use App\Http\Controllers\Api\User\SupportTicket\SupportTicketController as UserSupportTicketController;
+use App\Http\Controllers\Api\User\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(function (): void {
@@ -101,6 +102,7 @@ Route::prefix('user')->group(function (): void {
     Route::post('login', [UserAuthController::class, 'login']);
 
     Route::middleware('optional.sanctum')->group(function (): void {
+        Route::get('users/{user}', [UserProfileController::class, 'show'])->whereNumber('user');
         Route::get('posts', [UserPostController::class, 'index']);
         Route::get('posts/{post}', [UserPostController::class, 'show'])->whereNumber('post');
         Route::get('posts/{post}/comments', [UserPostController::class, 'commentsIndex'])->whereNumber('post');

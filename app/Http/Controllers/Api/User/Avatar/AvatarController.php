@@ -12,7 +12,8 @@ class AvatarController extends Controller
     public function index(): AnonymousResourceCollection
     {
         $avatars = Avatar::query()
-            ->latest('id')
+            ->orderBy('sort_order')
+            ->orderBy('id')
             ->get();
 
         return AvatarPresetResource::collection($avatars);

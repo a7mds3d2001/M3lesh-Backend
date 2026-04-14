@@ -18,6 +18,7 @@ class Avatar extends Model
 
     protected $fillable = [
         'image',
+        'sort_order',
     ];
 
     /**

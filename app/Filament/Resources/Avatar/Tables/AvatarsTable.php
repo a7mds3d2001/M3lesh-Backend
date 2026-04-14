@@ -14,6 +14,9 @@ class AvatarsTable
     {
         return $table
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable(),
                 ImageColumn::make('image')
                     ->label(__('filament.fields.image'))
                     ->getStateUsing(fn (Avatar $record): ?string => $record->image
@@ -25,12 +28,15 @@ class AvatarsTable
                     ->dateTime()
                     ->sortable(),
             ])
+            ->reorderable('sort_order')
+            ->authorizeReorder(fn (): bool => auth()->guard('admin')->user()?->can('create_avatars') ?? false)
+            ->defaultSort('sort_order')
             ->recordActions([
                 DeleteAction::make()
                     ->iconButton()
                     ->color('danger'),
             ])
             ->toolbarActions([])
-            ->defaultSort('id', 'desc');
+            ->paginated(false);
     }
 }
